@@ -20,6 +20,7 @@ import { loadCustomThemes } from './theme-custom.js'
 import { TuiApp } from './ui/app.js'
 import { installHostStderrGuard, shouldInstallHostStderrGuard } from './host-stderr-guard.js'
 
+import { tr } from './i18n/index.js'
 /** Stable Cordis plugin name the bundle patch inserts. */
 export const name = 'tui-runner'
 
@@ -137,7 +138,7 @@ export function apply(ctx: Context, config: TuiRunnerConfig = {}): void {
         // 新进程 stdio inherit 同一 TTY（POSIX detached 防 SIGHUP/SIGTTIN）。
         const ok = await spawnSelfRestart()
         if (!ok) {
-          console.error('[tui-runner] 重启失败：无法重新启动当前命令，请手动运行 dsh --profile tui')
+          console.error(tr('[tui-runner] 重启失败：无法重新启动当前命令，请手动运行 dsh --profile tui'))
         }
         requestHostExit()
         return

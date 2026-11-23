@@ -16,6 +16,7 @@ import { projectKeymapEntries, type ProjectedKeymapEntry } from '../actions/proj
 import { supportsKittyKeyboard } from '../term-caps.js'
 import { displayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 快捷键面板条目：键位 + 动作说明。 */
 export interface KeymapEntry {
   /** 键位组合（如 'Ctrl+P'）。 */
@@ -29,12 +30,12 @@ export interface KeymapEntry {
  * order 与动作表的 keymapOrder 归并对齐原表序）。
  */
 const INPUT_LAYER_ROWS: readonly (ProjectedKeymapEntry & { order: number })[] = [
-  { order: 10, keys: 'Enter', action: '发送' },
-  { order: 20, keys: 'Shift+Enter', action: '换行（或 \\+Enter 续行）' },
-  { order: 130, keys: 'Ctrl+U', action: '删除到行首' },
-  { order: 160, keys: 'Tab', action: '@-路径补全 / 接受 slash 选中项' },
-  { order: 180, keys: 'PageUp/PageDown', action: 'slash 菜单翻页' },
-  { order: 190, keys: 'Alt+W', action: '复制选区到系统剪贴板（OSC52）' },
+  { order: 10, keys: 'Enter', action: tr('发送') },
+  { order: 20, keys: 'Shift+Enter', action: tr('换行（或 \\+Enter 续行）') },
+  { order: 130, keys: 'Ctrl+U', action: tr('删除到行首') },
+  { order: 160, keys: 'Tab', action: tr('@-路径补全 / 接受 slash 选中项') },
+  { order: 180, keys: 'PageUp/PageDown', action: tr('slash 菜单翻页') },
+  { order: 190, keys: 'Alt+W', action: tr('复制选区到系统剪贴板（OSC52）') },
 ]
 
 /**
@@ -75,7 +76,7 @@ function keyColumnWidth(entries: readonly KeymapEntry[]): number {
  */
 export function renderKeymapPanel(width: number, env: NodeJS.ProcessEnv = process.env): string[] {
   const entries = keymapEntries(env)
-  const title = '快捷键'
+  const title = tr('快捷键')
   const rows: string[] = [title, '']
   if (width < 12) return rows
   const keyCol = keyColumnWidth(entries)

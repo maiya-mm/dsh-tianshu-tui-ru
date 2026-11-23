@@ -16,6 +16,7 @@ import { displayWidth } from '../width.js'
 import { formatTokenCount } from './glance-bar.js'
 import { formatElapsedHuman } from './spinner-status.js'
 
+import { tr } from '../i18n/index.js'
 /** 运行中状态行的渲染输入。 */
 export interface SubagentRunningInput {
   width: number
@@ -64,7 +65,7 @@ function truncateTo(text: string, columns: number): string {
  */
 export function formatSubagentRunning(input: SubagentRunningInput, theme: RivetTheme): string[] {
   const spinner = input.ascii === true ? '*' : brailleSpinnerFrame(input.tick ?? 0)
-  const text = `${spinner} 子代理 ${input.label}`
+  const text = `${spinner}${tr(' 子代理 ')}${input.label}`
   return [color(truncateTo(text, input.width), theme.primary)]
 }
 
@@ -89,7 +90,7 @@ export function formatSubagentDone(input: SubagentDoneInput, theme: RivetTheme):
     : ` (${stopReason})`
   const segments: string[] = []
   const toolCalls = input.stats?.toolCalls
-  if (toolCalls !== undefined && toolCalls > 0) segments.push(`${toolCalls} 工具`)
+  if (toolCalls !== undefined && toolCalls > 0) segments.push(`${toolCalls}${tr(' 工具')}`)
   const tokensUsed = input.stats?.tokensUsed
   if (tokensUsed !== undefined && tokensUsed > 0) segments.push(`${formatTokenCount(tokensUsed)} tok`)
   segments.push(formatElapsedHuman(elapsedMs))

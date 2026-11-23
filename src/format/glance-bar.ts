@@ -10,6 +10,7 @@ import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
 import { formatElapsedHuman } from './spinner-status.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * token 计数紧凑显示：<1000 原样；<1M 用 `k`（非整时留 1 位小数）；否则 `M` 留 2 位。
  * @param n - token 数。
@@ -84,7 +85,7 @@ export function glanceStatusSegments(input: FormatGlanceBarInput): string[] {
   if (input.preset !== undefined && input.preset !== '') segs.push(input.preset)
   if (input.modelName !== undefined) segs.push(input.modelName)
   if (input.effort !== undefined && !hidden.has('effort')) segs.push(`◎${input.effort}`)
-  if (input.stalled) segs.push('停滞')
+  if (input.stalled) segs.push(tr('停滞'))
   return segs
 }
 
@@ -97,10 +98,10 @@ export function glanceStatusSegments(input: FormatGlanceBarInput): string[] {
 export function glanceMetricsSegments(input: FormatGlanceBarInput): string[] {
   const hidden = new Set(input.hideSegments ?? [])
   const segs: string[] = []
-  if (input.cacheHitRate !== undefined && !hidden.has('cache')) segs.push(`缓存 ${Math.round(input.cacheHitRate * 100)}%`)
+  if (input.cacheHitRate !== undefined && !hidden.has('cache')) segs.push(`${tr('缓存 ')}${Math.round(input.cacheHitRate * 100)}%`)
   if (input.contextRatio !== undefined && !hidden.has('context')) {
     const warn = input.contextRatio >= CONTEXT_WARN_RATIO
-    const label = `${warn ? '⚠' : ''}上下文 ${Math.round(input.contextRatio * 100)}%`
+    const label = `${warn ? '⚠' : ''}${tr('上下文 ')}${Math.round(input.contextRatio * 100)}%`
     segs.push(input.contextBar === false
       ? label
       : `${label} ${formatContextBar(input.contextRatio, input.ascii === true)}`)
@@ -128,10 +129,10 @@ export function glanceBarSegments(input: FormatGlanceBarInput): string[] {
   if (input.preset !== undefined && input.preset !== '') segs.push(input.preset)
   if (input.modelName !== undefined) segs.push(input.modelName)
   if (input.effort !== undefined && !hidden.has('effort')) segs.push(`◎${input.effort}`)
-  if (input.cacheHitRate !== undefined && !hidden.has('cache')) segs.push(`缓存 ${Math.round(input.cacheHitRate * 100)}%`)
+  if (input.cacheHitRate !== undefined && !hidden.has('cache')) segs.push(`${tr('缓存 ')}${Math.round(input.cacheHitRate * 100)}%`)
   if (input.contextRatio !== undefined && !hidden.has('context')) {
     const warn = input.contextRatio >= CONTEXT_WARN_RATIO
-    const label = `${warn ? '⚠' : ''}上下文 ${Math.round(input.contextRatio * 100)}%`
+    const label = `${warn ? '⚠' : ''}${tr('上下文 ')}${Math.round(input.contextRatio * 100)}%`
     segs.push(input.contextBar === false
       ? label
       : `${label} ${formatContextBar(input.contextRatio, input.ascii === true)}`)
@@ -145,7 +146,7 @@ export function glanceBarSegments(input: FormatGlanceBarInput): string[] {
   if (input.density === 'full') {
     if (input.turnCount !== undefined) segs.push(`#${input.turnCount}`)
   }
-  if (input.stalled) segs.push('停滞')
+  if (input.stalled) segs.push(tr('停滞'))
   return segs
 }
 

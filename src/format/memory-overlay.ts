@@ -23,6 +23,7 @@ import type { RivetTheme } from '../theme.js'
 import { getTheme } from '../theme.js'
 import { truncateToDisplayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 记忆浏览器条目（memory 服务 list() 返回形状的最小消费面）。 */
 export interface MemoryBrowserItem {
   readonly id: string
@@ -179,21 +180,21 @@ export class MemoryBrowserOverlay implements OverlayRenderer {
     if (this.items.length === 0) {
       return [
         color('🧠 memory', theme.secondary),
-        color('（暂无记忆）', theme.muted),
-        color('用 /remember <text> 保存第一条', theme.muted),
+        color(tr('（暂无记忆）'), theme.muted),
+        color(tr('用 /remember <text> 保存第一条'), theme.muted),
       ]
     }
     if (this.deleting) {
-      return [color('🧠 memory', theme.secondary), color('删除中…', theme.muted)]
+      return [color('🧠 memory', theme.secondary), color(tr('删除中…'), theme.muted)]
     }
     const filtered = this.filtered
     const rows: string[] = [
-      color(`🧠 memory${this.query === '' ? '' : ` · filter: ${this.query}`}（${filtered.length}/${this.items.length} 条）`, theme.secondary),
+      color(`🧠 memory${this.query === '' ? '' : ` · filter: ${this.query}`}${tr('（')}${filtered.length}/${this.items.length}${tr(' 条）')}`, theme.secondary),
     ]
     if (filtered.length === 0) {
-      rows.push(color('（无匹配条目——Backspace 清除过滤）', theme.muted))
+      rows.push(color(tr('（无匹配条目——Backspace 清除过滤）'), theme.muted))
       rows.push(color('─'.repeat(contentWidth), theme.muted))
-      rows.push(color('↑↓ 选择 · 输入过滤 · x 删除 · Ctrl+N/P 翻页 · Esc 关闭', theme.muted))
+      rows.push(color(tr('↑↓ 选择 · 输入过滤 · x 删除 · Ctrl+N/P 翻页 · Esc 关闭'), theme.muted))
       return rows
     }
     // 列表区（上半）：视口滚动跟随选中。
@@ -219,10 +220,10 @@ export class MemoryBrowserOverlay implements OverlayRenderer {
         if (line !== undefined) rows.push(truncateToDisplayWidth(line, contentWidth))
       }
       if (contentLines.length > remaining) {
-        rows.push(color(`…（共 ${contentLines.length} 行）`, theme.muted))
+        rows.push(color(`${tr('…（共 ')}${contentLines.length}${tr(' 行）')}`, theme.muted))
       }
     }
-    rows.push(color('↑↓ 选择 · 输入过滤 · x 删除 · Ctrl+N/P 翻页 · Esc 关闭', theme.muted))
+    rows.push(color(tr('↑↓ 选择 · 输入过滤 · x 删除 · Ctrl+N/P 翻页 · Esc 关闭'), theme.muted))
     return rows
   }
 }

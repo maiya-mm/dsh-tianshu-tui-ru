@@ -15,6 +15,7 @@ import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
 import { formatElapsed } from './tool-meta.js'
 
+import { tr } from '../i18n/index.js'
 /** 可折叠命令的长度上限（trim 后字符数；超长命令不折叠）。 */
 export const MAX_COLLAPSIBLE_COMMAND_LEN = 80
 
@@ -163,8 +164,8 @@ function entryLines(g: CollapsedBashGroup, theme: RivetTheme, columns: number): 
       const prev = previewLines(e.content, e.isError === true, columns)
       const indent = last ? '   ' : '│  '
       for (const pl of prev.lines) out.push(indent + color(pl, theme.muted))
-      if (prev.hiddenTop > 0) out.push(indent + color(`… 已隐藏上文 ${prev.hiddenTop} 行`, theme.muted))
-      if (prev.hiddenBottom > 0) out.push(indent + color(`… 已隐藏 ${prev.hiddenBottom} 行`, theme.muted))
+      if (prev.hiddenTop > 0) out.push(indent + color(`${tr('… 已隐藏上文 ')}${prev.hiddenTop}${tr(' 行')}`, theme.muted))
+      if (prev.hiddenBottom > 0) out.push(indent + color(`${tr('… 已隐藏 ')}${prev.hiddenBottom}${tr(' 行')}`, theme.muted))
     }
   }
   return out

@@ -25,6 +25,7 @@ import { color } from '../engine/ansi.js'
 import type { RivetTheme } from '../theme.js'
 import { truncateToDisplayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 对话框管理的凭据引用（credentials 服务层的 POSIX 变量名）。 */
 const KEY_REF = 'DEEPSEEK_API_KEY'
 
@@ -260,7 +261,7 @@ export class KeyDialogController implements OverlayRenderer {
         if (!this.openFlag || this.phase !== 'probing') return
         if (result === 'invalid') {
           this.phase = 'input'
-          this.error = 'Key 无效（401/403），请检查后重试'
+          this.error = tr('Key 无效（401/403），请检查后重试')
           this.onChange?.()
           return
         }
@@ -309,39 +310,39 @@ export class KeyDialogController implements OverlayRenderer {
    */
   render(width: number, _height: number): string[] {
     const theme = this.getTheme()
-    const lines: string[] = [color(`设置 ${this.target.displayName} API Key`, theme.brandColor, { bold: true })]
+    const lines: string[] = [color(`${tr('设置 ')}${this.target.displayName} API Key`, theme.brandColor, { bold: true })]
     switch (this.phase) {
       case 'blocked':
         lines.push('')
-        lines.push(color(`进程环境已提供 ${this.target.ref}，文件写入不会生效（环境变量优先）。`, theme.warning))
-        lines.push(color('请 unset 后重试，或改用环境变量管理。', theme.muted))
+        lines.push(color(`${tr('进程环境已提供 ')}${this.target.ref}${tr('，文件写入不会生效（环境变量优先）。')}`, theme.warning))
+        lines.push(color(tr('请 unset 后重试，或改用环境变量管理。'), theme.muted))
         lines.push('')
-        lines.push(color('Enter / Esc 关闭', theme.muted))
+        lines.push(color(tr('Enter / Esc 关闭'), theme.muted))
         break
       case 'unavailable':
         lines.push('')
-        lines.push(color(`当前部署无凭据存储，请设置环境变量 ${this.target.ref}。`, theme.warning))
+        lines.push(color(`${tr('当前部署无凭据存储，请设置环境变量 ')}${this.target.ref}${tr('。')}`, theme.warning))
         lines.push('')
-        lines.push(color('Enter / Esc 关闭', theme.muted))
+        lines.push(color(tr('Enter / Esc 关闭'), theme.muted))
         break
       case 'saved':
         lines.push('')
-        lines.push(color('✓ 已保存并生效，无需重启。', theme.success))
+        lines.push(color(tr('✓ 已保存并生效，无需重启。'), theme.success))
         lines.push('')
-        lines.push(color('Enter / Esc 关闭', theme.muted))
+        lines.push(color(tr('Enter / Esc 关闭'), theme.muted))
         break
         // input / probing / saving / confirm-unknown：说明 + 掩码输入行 + 状态/错误行 + 键位提示
       default: {
-        lines.push(color(`用于 ${this.target.displayName} API 请求认证。`, theme.muted))
-        lines.push(color('保存到 $DSH_HOME/.credentials.yaml（0600）；进程环境同名变量优先。', theme.muted))
+        lines.push(color(`${tr('用于 ')}${this.target.displayName}${tr(' API 请求认证。')}`, theme.muted))
+        lines.push(color(tr('保存到 $DSH_HOME/.credentials.yaml（0600）；进程环境同名变量优先。'), theme.muted))
         lines.push('')
         lines.push(color(`Key: ${maskKeyInput(this.value)}`, theme.primary))
-        if (this.phase === 'probing') lines.push(color('正在验证 Key…', theme.muted))
-        if (this.phase === 'saving') lines.push(color('正在保存…', theme.muted))
-        if (this.phase === 'confirm-unknown') lines.push(color('⚠ 无法验证 Key（网络错误或超时）。', theme.warning))
+        if (this.phase === 'probing') lines.push(color(tr('正在验证 Key…'), theme.muted))
+        if (this.phase === 'saving') lines.push(color(tr('正在保存…'), theme.muted))
+        if (this.phase === 'confirm-unknown') lines.push(color(tr('⚠ 无法验证 Key（网络错误或超时）。'), theme.warning))
         if (this.error !== null) lines.push(color(`✗ ${this.error}`, theme.error))
         lines.push('')
-        lines.push(color(this.phase === 'confirm-unknown' ? 'Enter 仍要保存 · Esc 取消' : 'Enter 提交 · Esc 取消', theme.muted))
+        lines.push(color(this.phase === 'confirm-unknown' ? tr('Enter 仍要保存 · Esc 取消') : tr('Enter 提交 · Esc 取消'), theme.muted))
         break
       }
     }

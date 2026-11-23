@@ -9,6 +9,7 @@ import type { SessionSummary } from './adapter/sessions.js'
 import type { PickerItem } from './picker.js'
 import { shortSessionLabel } from './session-label.js'
 
+import { tr } from './i18n/index.js'
 /** 可恢复会话视图行（live = 当前进程内仍活跃）。 */
 export interface RestorableSession {
   id: SessionId
@@ -62,12 +63,12 @@ const DAY_MS = 86_400_000
 export function formatSessionAge(createdAt: number, now: number): string {
   // 宿主升级跨存储格式（如 0.1.5 起 v3/zstd）后，遗留会话目录可能列出
   // createdAt 缺失的摘要——渲染「未知时间」，绝不输出 NaN-NaN-NaN。
-  if (!Number.isFinite(createdAt)) return '未知时间'
+  if (!Number.isFinite(createdAt)) return tr('未知时间')
   const diff = now - createdAt
-  if (diff < 60_000) return '刚刚'
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} 分钟前`
-  if (diff < DAY_MS) return `${Math.floor(diff / 3_600_000)} 小时前`
-  if (diff < 7 * DAY_MS) return `${Math.floor(diff / DAY_MS)} 天前`
+  if (diff < 60_000) return tr('刚刚')
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}${tr(' 分钟前')}`
+  if (diff < DAY_MS) return `${Math.floor(diff / 3_600_000)}${tr(' 小时前')}`
+  if (diff < 7 * DAY_MS) return `${Math.floor(diff / DAY_MS)}${tr(' 天前')}`
   const d = new Date(createdAt)
   const pad = (n: number): string => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
@@ -97,7 +98,7 @@ export function formatRestorableSessions(
   rows: readonly RestorableSession[],
   opts: RestorableOptions = {},
 ): string[] {
-  if (rows.length === 0) return ['（无可恢复会话）']
+  if (rows.length === 0) return [tr('（无可恢复会话）')]
   const now = opts.now ?? Date.now()
   const maxRows = opts.maxRows !== undefined && opts.maxRows > 0 ? opts.maxRows : undefined
   const shown = maxRows !== undefined ? rows.slice(0, maxRows) : rows
@@ -112,7 +113,7 @@ export function formatRestorableSessions(
     return parts.join(' · ')
   })
   const hidden = rows.length - shown.length
-  if (hidden > 0) out.push(`… 还有 ${hidden} 个会话`)
+  if (hidden > 0) out.push(`${tr('… 还有 ')}${hidden}${tr(' 个会话')}`)
   return out
 }
 
@@ -123,10 +124,10 @@ export type SessionAgeGroup = 'today' | 'yesterday' | 'week' | 'earlier'
 export const SESSION_AGE_GROUP_ORDER = ['today', 'yesterday', 'week', 'earlier'] as const
 
 const SESSION_AGE_GROUP_LABEL: Readonly<Record<SessionAgeGroup, string>> = {
-  today: '今天',
-  yesterday: '昨天',
-  week: '本周',
-  earlier: '更早',
+  today: tr('今天'),
+  yesterday: tr('昨天'),
+  week: tr('本周'),
+  earlier: tr('更早'),
 }
 
 /** 本地日 00:00（与分组同一日界）。 */
@@ -240,7 +241,7 @@ export function formatSessionListLines(
  * 崩在 `toISOString()` 的 RangeError 上（真机 0.1.5 实测）。
  */
 function isoTimeOrUnknown(createdAt: number): string {
-  if (!Number.isFinite(createdAt)) return '未知时间'
+  if (!Number.isFinite(createdAt)) return tr('未知时间')
   const d = new Date(createdAt)
-  return Number.isFinite(d.getTime()) ? d.toISOString() : '未知时间'
+  return Number.isFinite(d.getTime()) ? d.toISOString() : tr('未知时间')
 }

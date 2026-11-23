@@ -6,13 +6,14 @@
  * deriveGlanceStatus）；formatElapsedHuman 另被 activity/rewind/turn-summary
  * 等多处复用。
  */
+import { tr } from '../i18n/index.js'
 /** 动词池轮换时间片（ms）：同一片内取同一词，跨片轮换。 */
 export const VERB_ROTATE_MS = 4_000
 
 /** 默认动词池（思考/分析/检索…；池首恒为「思考中」——reducedMotion 冻结词）。 */
 export const DEFAULT_SPINNER_VERBS: readonly string[] = [
-  '思考中', '分析中', '推理中', '检索中', '整理中', '写作中',
-  '沉思中', '琢磨中', '推敲中', '酝酿中', '腌制中', '翻炒中', '施法中', '缝合中',
+  tr('思考中'), tr('分析中'), tr('推理中'), tr('检索中'), tr('整理中'), tr('写作中'),
+  tr('沉思中'), tr('琢磨中'), tr('推敲中'), tr('酝酿中'), tr('腌制中'), tr('翻炒中'), tr('施法中'), tr('缝合中'),
 ]
 
 /**
@@ -41,7 +42,7 @@ export function verbForElapsed(
 ): string {
   const pool = verbs.length > 0 ? verbs : DEFAULT_SPINNER_VERBS
   const first = pool[0]
-  if (first === undefined) return '思考中' // 不可达：池恒非空
+  if (first === undefined) return tr('思考中') // 不可达：池恒非空
   if (reduced) return first
   const idx = Math.floor(elapsedMs / VERB_ROTATE_MS) % pool.length
   return pool[idx] ?? first

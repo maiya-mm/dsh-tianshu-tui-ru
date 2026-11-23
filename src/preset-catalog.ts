@@ -7,6 +7,7 @@
  *
  * @module @huiliyi37/dsh-tianshu-tui/preset-catalog
  */
+import { tr } from './i18n/index.js'
 
 /** 一套 shipped 预设的展示文案。 */
 export interface ShippedPresetBlurb {
@@ -25,31 +26,31 @@ export interface ShippedPresetBlurb {
 const BLURBS: readonly ShippedPresetBlurb[] = [
   {
     id: 'standard',
-    short: '标准',
-    name: '标准模式',
-    capability: '完整编码 Agent：改文件、Shell、检索、网页、Skills、计划、目标、子代理、工作流',
-    tools: 'bash · 编辑 · 检索 · web · skills · 计划 · 目标 · 子代理 · 工作流',
+    short: tr('标准'),
+    name: tr('标准模式'),
+    capability: tr('完整编码 Agent：改文件、Shell、检索、网页、Skills、计划、目标、子代理、工作流'),
+    tools: tr('bash · 编辑 · 检索 · web · skills · 计划 · 目标 · 子代理 · 工作流'),
   },
   {
     id: 'ptc',
     short: 'PTC',
-    name: 'PTC 模式',
-    capability: '标准能力 + PTC：用一个 TypeScript 程序组合多步工具',
-    tools: '标准工具面 + run_code（PTC SDK）',
+    name: tr('PTC 模式'),
+    capability: tr('标准能力 + PTC：用一个 TypeScript 程序组合多步工具'),
+    tools: tr('标准工具面 + run_code（PTC SDK）'),
   },
   {
     id: 'minimal',
-    short: '极简',
-    name: '极简模式',
-    capability: '少干扰持久 Shell 编码面，适合评测与只要终端的任务',
-    tools: 'persistent bash（持久 Shell）',
+    short: tr('极简'),
+    name: tr('极简模式'),
+    capability: tr('少干扰持久 Shell 编码面，适合评测与只要终端的任务'),
+    tools: tr('persistent bash（持久 Shell）'),
   },
   {
     id: 'cordis',
-    short: '创造',
-    name: '创造模式',
-    capability: '标准能力 + 做自定义 preset：运行时检查、插件实验、创作指导',
-    tools: '标准工具面 + 运行时检查 · 插件实验 · preset 创作',
+    short: tr('创造'),
+    name: tr('创造模式'),
+    capability: tr('标准能力 + 做自定义 preset：运行时检查、插件实验、创作指导'),
+    tools: tr('标准工具面 + 运行时检查 · 插件实验 · preset 创作'),
   },
 ]
 

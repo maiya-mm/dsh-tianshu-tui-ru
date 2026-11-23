@@ -19,22 +19,23 @@
 import { displayWidth } from './width.js'
 import type { ConfigTuiInput } from './os-notify.js'
 
+import { tr } from './i18n/index.js'
 export type { ConfigTuiInput }
 
 /** 面板标题行。 */
-const TITLE = '⚙ 配置'
+const TITLE = tr('⚙ 配置')
 /** 终端偏好段标题。 */
-const TUI_TITLE = '◆ 终端'
+const TUI_TITLE = tr('◆ 终端')
 /** 宿主设置段标题。 */
-const SETTINGS_TITLE = '◆ 宿主设置'
+const SETTINGS_TITLE = tr('◆ 宿主设置')
 /** 权限预设段标题。 */
-const PERMISSION_TITLE = '◆ 权限预设'
+const PERMISSION_TITLE = tr('◆ 权限预设')
 /** 凭据段标题。 */
-const CREDENTIALS_TITLE = '◆ 凭据'
+const CREDENTIALS_TITLE = tr('◆ 凭据')
 /** 底栏：可切换。 */
-const HINT_TOGGLE = 'n 通知 · d 密度 · Esc 关闭'
+const HINT_TOGGLE = tr('n 通知 · d 密度 · Esc 关闭')
 /** 底栏：环境变量锁定。 */
-const HINT_LOCKED = 'n 锁定 · d 密度 · Esc 关闭'
+const HINT_LOCKED = tr('n 锁定 · d 密度 · Esc 关闭')
 /** 置灰（细体/暗色）转义序列：只读凭据行整行包裹。 */
 const DIM = '\x1B[2m'
 /** SGR 重置转义序列。 */
@@ -44,9 +45,9 @@ const CHECK = '✓'
 /** 非当前选项标记。 */
 const CIRCLE = '○'
 /** 已配置徽章。 */
-const CONFIGURED = '● 已配置'
+const CONFIGURED = tr('● 已配置')
 /** 未配置徽章。 */
-const UNCONFIGURED = '○ 未配置'
+const UNCONFIGURED = tr('○ 未配置')
 /** 权限预设唯一保留字：派生自 knob 组合、不在预设表中的当前值。 */
 const CUSTOM = 'custom'
 
@@ -136,14 +137,14 @@ export function projectConfigPanel(projection: ConfigPanelProjection, opts: Conf
 /** 终端段：系统通知 + 可选紧凑渲染。 */
 function projectTuiSection(tui: ConfigTuiInput, width: number): string[] {
   const mark = tui.notifyOs ? '●' : CIRCLE
-  const state = tui.notifyLocked ? '关（DSH_TUI_SKIP_NOTIFY）' : tui.notifyOs ? '开' : '关'
+  const state = tui.notifyLocked ? tr('关（DSH_TUI_SKIP_NOTIFY）') : tui.notifyOs ? tr('开') : tr('关')
   const rows = [
     truncateByWidth(TUI_TITLE, width),
-    truncateByWidth(`  ${mark} 系统通知 · ${state}`, width),
+    truncateByWidth(`  ${mark}${tr(' 系统通知 · ')}${state}`, width),
   ]
   if (tui.compactMode !== undefined) {
     const dMark = tui.compactMode ? '●' : CIRCLE
-    rows.push(truncateByWidth(`  ${dMark} 紧凑渲染 · ${tui.compactMode ? '开' : '关'}`, width))
+    rows.push(truncateByWidth(`  ${dMark}${tr(' 紧凑渲染 · ')}${tui.compactMode ? tr('开') : tr('关')}`, width))
   }
   return rows
 }
@@ -194,7 +195,7 @@ function formatValue(value: unknown): string {
 function secretMark(secrets: ConfigSettingsDescriptorInput['secrets']): string {
   if (secrets === undefined || secrets.length === 0) return ''
   const set = secrets.filter(s => s.set).length
-  return set > 0 ? ` 🔒 ${set} 密钥已脱敏` : ' 🔒 密钥槽'
+  return set > 0 ? ` 🔒 ${set}${tr(' 密钥已脱敏')}` : tr(' 🔒 密钥槽')
 }
 
 /** 权限预设段：段标题 + 每个选项一行（当前 ✓ / 其余 ○）；custom 保留字缺失时补行。 */
@@ -231,7 +232,7 @@ function projectCredentialsSection(credentials: ConfigCredentialInput[], width: 
 function projectCredentialRow(cred: ConfigCredentialInput, width: number): string {
   const configured = cred.configured ? CONFIGURED : UNCONFIGURED
   const source = cred.source === undefined ? '' : ` · ${cred.source}`
-  const writable = cred.writable ? '可写' : '只读'
+  const writable = cred.writable ? tr('可写') : tr('只读')
   const row = truncateByWidth(`  ${cred.ref} ${configured}${source} · ${writable}`, width)
   return cred.writable ? row : `${DIM}${row}${RESET}`
 }

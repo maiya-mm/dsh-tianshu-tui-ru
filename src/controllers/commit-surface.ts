@@ -29,6 +29,7 @@ import { encodeTermImage, prepareTermImageForCommit, type PreparedTermImage } fr
 import { formatUserMessage } from '../format/user-message.js'
 import type { RivetTheme } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 /** 识图能力三态快照（app 侧 vision 状态的只读视图）。 */
 export interface CommitVisionState {
   supportsVision: boolean
@@ -202,10 +203,10 @@ export class CommitSurface {
       if (!vision.supportsVision) {
         if (vision.bridgeEnabled) {
           // 提示反映真实桥接来源：桥接=图先经视觉模型转文字描述再发。
-          const src = vision.bridgeSource === 'auto' ? '（自动选用的视觉模型）' : ''
-          imageNote += `\n${color(`🖼 主模型不识图，将经识图桥${src}生成图片描述后发送`, theme.muted)}`
+          const src = vision.bridgeSource === 'auto' ? tr('（自动选用的视觉模型）') : ''
+          imageNote += `\n${color(`${tr('🖼 主模型不识图，将经识图桥')}${src}${tr('生成图片描述后发送')}`, theme.muted)}`
         } else {
-          imageNote += `\n${color('⚠ 当前模型不支持识图，且无可用识图桥，图片未发送。请在配置中指定识图模型。', theme.warning)}`
+          imageNote += `\n${color(tr('⚠ 当前模型不支持识图，且无可用识图桥，图片未发送。请在配置中指定识图模型。'), theme.warning)}`
         }
       }
     }

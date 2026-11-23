@@ -28,6 +28,7 @@ import {
   type ImageToolCommand,
 } from './image-tool.js'
 
+import { tr } from '../i18n/index.js'
 /** Provider cap: 3.5 MB decoded per image。对齐宿主 attachment-local 单图准入
  *  默认（rc.8 由 5MB 收紧至 3.5MB，含 base64 膨胀后仍在 5MB 路由检查内）——
  *  本地预算高于准入会让原样放行的图被附件存储拒绝。 */
@@ -194,7 +195,7 @@ async function compressToBudget(
     }
   }
   const mb = ((last?.length ?? 0) / (1024 * 1024)).toFixed(1)
-  throw new Error(`图片压缩后仍超过上限（${mb} MB），请改用更小的源图`)
+  throw new Error(`${tr('图片压缩后仍超过上限（')}${mb}${tr(' MB），请改用更小的源图')}`)
 }
 
 /**

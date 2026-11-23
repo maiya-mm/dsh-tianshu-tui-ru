@@ -18,10 +18,11 @@ import { color } from '../engine/ansi.js'
 import type { LiveRegionLine } from '../engine/live-engine.js'
 import type { RivetTheme } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 /** 提示表：动作 id + 确认窗口 + 文案（表序即渲染序）。 */
 const CONFIRM_HINTS = [
-  ['app.interrupt', EXIT_WINDOW_MS, '再按 Ctrl+C 退出 · Ctrl+Q 立即退出'],
-  ['session.rewind', REWIND_DOUBLE_ESC_MS, '再按 Esc 打开 rewind'],
+  ['app.interrupt', EXIT_WINDOW_MS, tr('再按 Ctrl+C 退出 · Ctrl+Q 立即退出')],
+  ['session.rewind', REWIND_DOUBLE_ESC_MS, tr('再按 Esc 打开 rewind')],
 ] as const
 
 /**

@@ -6,6 +6,7 @@
  *
  * @module @huiliyi37/dsh-tianshu-tui/adapter/preset-join
  */
+import { tr } from '../i18n/index.js'
 
 /** 官方 agentPresets 花名册的最小 join 面。 */
 export interface PresetJoinFacet {
@@ -82,13 +83,13 @@ export async function joinCreateOrWarn(
   // 未挂）时旧实现静默跳过——用户拿到的是无工具面 agent 且无任何提示。
   // 装配缺失必须可见：提示重跑安装命令让 bundle patch 重新生效。
   if (facet === undefined) {
-    warn('⚠ agent-presets 未装配：本会话没有工具面。请重跑安装命令更新装配（dsh plugin --profile tui add @huiliyi37/dsh-tianshu-tui）')
+    warn(tr('⚠ agent-presets 未装配：本会话没有工具面。请重跑安装命令更新装配（dsh plugin --profile tui add @huiliyi37/dsh-tianshu-tui）'))
     return undefined
   }
   try {
     return (await joinPreset({ facet, agentCtx, mode: 'create', preferredId })).id
   } catch (error) {
-    warn(`⚠ 启动默认预设未生效: ${error instanceof Error ? error.message : String(error)}`)
+    warn(`${tr('⚠ 启动默认预设未生效: ')}${error instanceof Error ? error.message : String(error)}`)
     return undefined
   }
 }

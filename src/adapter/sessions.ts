@@ -20,6 +20,7 @@ import { SessionLogOffset, SessionSeq } from '@deepseek-ai/dsh-session'
 import { resolvePresetId } from '../preset-surface.js'
 import { EMPTY_TITLE, sessionTitleFor } from './session-title.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * `ctx.sessionPersistence` 的最小读面（metadata 列表 + 事件日志 + 可选
  * artifact 定位），不引入完整服务类型。适配层 as 收窄是仓规允许模式
@@ -180,7 +181,7 @@ export function liveForkSeed(events: readonly SessionEvent[]): readonly SessionE
     if (event.type === 'turn/start') open = true
     else if (event.type === 'turn/end') open = false
   }
-  if (open) throw new Error('当前会话回合未结束，无法分叉')
+  if (open) throw new Error(tr('当前会话回合未结束，无法分叉'))
   return events
 }
 

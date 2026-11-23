@@ -13,6 +13,7 @@ import { color } from '../engine/ansi.js'
 import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 单文件诊断徽标（工具卡标题行注入；无诊断返回 null 不渲染）。 */
 export function lspBadgeText(diags: readonly LspDiagnosticView[] | undefined): string | null {
   if (diags === undefined || diags.length === 0) return null
@@ -20,9 +21,9 @@ export function lspBadgeText(diags: readonly LspDiagnosticView[] | undefined): s
   const warnings = diags.filter(d => d.severity === 2).length
   const others = diags.length - errors - warnings
   const parts: string[] = []
-  if (errors > 0) parts.push(`${errors}错`)
-  if (warnings > 0) parts.push(`${warnings}警`)
-  if (others > 0) parts.push(`${others}提示`)
+  if (errors > 0) parts.push(`${errors}${tr('错')}`)
+  if (warnings > 0) parts.push(`${warnings}${tr('警')}`)
+  if (others > 0) parts.push(`${others}${tr('提示')}`)
   return parts.join(' ')
 }
 
@@ -96,7 +97,7 @@ export function projectLspPanel(
 ): string[] {
   const rows: string[] = []
   if (groups.length === 0) {
-    rows.push(color(available ? '（无 LSP 诊断）' : '（LSP server 未安装——诊断不可用）', theme.muted))
+    rows.push(color(available ? tr('（无 LSP 诊断）') : tr('（LSP server 未安装——诊断不可用）'), theme.muted))
     return rows
   }
   for (const group of groups) {

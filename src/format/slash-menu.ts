@@ -102,7 +102,7 @@ export function formatSlashMenu(input: FormatSlashMenuInput, theme: RivetTheme):
     out.push(`${labelAnsi}${' '.repeat(pad)}${descAnsi}`)
   })
   if (total > maxRows) {
-    out.push(color(truncateTo(`  ${ascii ? '^v' : '↑↓'} 还有 ${total - maxRows} 项`, width), theme.muted))
+    out.push(color(truncateTo(`  ${ascii ? '^v' : '↑↓'}${tr(' 还有 ')}${total - maxRows}${tr(' 项')}`, width), theme.muted))
   }
   return out
 }

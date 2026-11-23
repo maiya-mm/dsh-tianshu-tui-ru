@@ -17,6 +17,7 @@ import type { OverlayKeyResult } from './engine/overlay-engine.js'
 import type { RivetTheme } from './theme.js'
 import { displayWidth } from './width.js'
 
+import { tr } from './i18n/index.js'
 /** 面板条目：命令名（不含 `/` 前缀）+ 描述 + 可选参数提示 + 分组名。 */
 export interface PaletteEntry {
   name: string
@@ -30,7 +31,7 @@ export interface PaletteEntry {
 export const PALETTE_GROUP_ORDER: readonly string[] = ['会话', '配置', '认证', '面板', '技能', '其他']
 
 /** 未分组条目（外部插件命令等）的兜底组名。 */
-export const PALETTE_FALLBACK_GROUP = '其他'
+export const PALETTE_FALLBACK_GROUP = tr('其他')
 
 /** 面板状态：开合 + 查询串 + 选中下标（指向过滤后列表）。 */
 export interface PaletteState {
@@ -160,9 +161,9 @@ export function renderCommandPalette(
   theme: RivetTheme,
 ): string[] {
   const visible = filterPalette(entries, state.query)
-  const lines: string[] = [color('命令面板', theme.brandColor, { bold: true })]
+  const lines: string[] = [color(tr('命令面板'), theme.brandColor, { bold: true })]
   if (visible.length === 0) {
-    lines.push(color('无匹配', theme.muted))
+    lines.push(color(tr('无匹配'), theme.muted))
   } else {
     const bodyHeight = Math.max(1, height - 2)
     const sel = Math.max(0, Math.min(state.selected, visible.length - 1))
@@ -193,7 +194,7 @@ export function renderCommandPalette(
     const start = Math.max(0, selRow - bodyHeight + 1)
     for (const row of rows.slice(start, start + bodyHeight)) {
       if (row.kind === 'header') {
-        lines.push(color(truncate(`── ${row.text} ──`, width), theme.muted))
+        lines.push(color(truncate(`── ${tr(row.text)} ──`, width), theme.muted))
         continue
       }
       const isSel = row.index === sel
@@ -204,7 +205,7 @@ export function renderCommandPalette(
         : color(truncate(text, width), theme.dim))
     }
   }
-  lines.push(color('Enter 执行 · Esc 关闭', theme.muted))
+  lines.push(color(tr('Enter 执行 · Esc 关闭'), theme.muted))
   return lines
 }
 

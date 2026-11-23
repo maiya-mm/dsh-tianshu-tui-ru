@@ -17,6 +17,7 @@ import { formatTokenCount } from './format/glance-bar.js'
 import { formatLiveCard, liveCardGlyph, truncateToLiveWidth, type LiveCardStatus } from './format/live-card.js'
 import { shortSessionLabel } from './session-label.js'
 
+import { tr } from './i18n/index.js'
 /** activity 状态：running 在 store 中存活，inactive 仅存在于持久化。 */
 export type DelegationActivity = 'running' | 'inactive'
 
@@ -89,16 +90,16 @@ export interface DelegationPanelOptions {
   theme?: RivetTheme
 }
 
-const TITLE = '🌳 委派'
+const TITLE = tr('🌳 委派')
 
 function modeMark(mode: DelegationMode): string {
   return mode === 'continuable' ? '↻' : '▶'
 }
 
 function reasonLabel(reason: Extract<DelegationTreeEntry, { kind: 'diagnostic' }>['reason']): string {
-  if (reason === 'corrupt') return '损坏'
-  if (reason === 'unavailable') return '不可用'
-  return '不支持'
+  if (reason === 'corrupt') return tr('损坏')
+  if (reason === 'unavailable') return tr('不可用')
+  return tr('不支持')
 }
 
 function shortHash(id: string): string {
@@ -128,17 +129,17 @@ function tokensText(progress: DelegationProgressProjection): string {
 
 function toolsText(progress: DelegationProgressProjection): string {
   if (progress.toolCalls <= 0) return ''
-  return `${progress.toolCalls} 工具`
+  return `${progress.toolCalls}${tr(' 工具')}`
 }
 
 function terminalText(progress: DelegationProgressProjection): string {
   switch (progress.lastTurnEnd) {
-    case 'completed': return '✓ 已完成'
-    case 'aborted': return '◌ 已中断'
-    case 'error': return '✗ 出错'
-    case 'max-tokens': return '✗ 达上限'
-    case 'blocked': return '⏸ 阻塞'
-    case 'interrupted': return '◌ 中断'
+    case 'completed': return tr('✓ 已完成')
+    case 'aborted': return tr('◌ 已中断')
+    case 'error': return tr('✗ 出错')
+    case 'max-tokens': return tr('✗ 达上限')
+    case 'blocked': return tr('⏸ 阻塞')
+    case 'interrupted': return tr('◌ 中断')
     default: return ''
   }
 }
@@ -162,7 +163,7 @@ export function projectExternalRunSection(
   opts: DelegationPanelOptions,
 ): string[] {
   if (entries.length === 0) return []
-  const rows = [truncateToLiveWidth('⤷ 外部子代理', opts.width)]
+  const rows = [truncateToLiveWidth(tr('⤷ 外部子代理'), opts.width)]
   for (const entry of entries) {
     const suffixes: string[] = []
     if (entry.startedAt !== undefined && opts.now !== undefined) {

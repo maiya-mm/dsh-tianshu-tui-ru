@@ -10,6 +10,7 @@ import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
 import { formatElapsedHuman } from './spinner-status.js'
 
+import { tr } from '../i18n/index.js'
 /** turn 内的阶段（trail glyph 的判别标签）。 */
 export type TurnPhase = 'thinking' | 'streaming' | 'tool' | 'verifying' | 'done'
 
@@ -57,7 +58,7 @@ export function formatTurnSummary(input: TurnSummaryInput, theme: RivetTheme): s
     ? input.segments.map(s => (ascii ? GLYPHS[s].ascii : GLYPHS[s].box)).join(' → ')
     : undefined
   if (trail !== undefined) parts.push(trail)
-  parts.push(`读${input.filesRead} 改${input.filesModified}`)
+  parts.push(`${tr('读')}${input.filesRead}${tr(' 改')}${input.filesModified}`)
   if (input.verifiedCount !== undefined && input.verifiedCount > 0) {
     parts.push(`${ascii ? 'v' : '✓'}${input.verifiedCount}`)
   }

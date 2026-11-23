@@ -143,6 +143,7 @@ import {
 } from '../lsp/lsp-bridge.js'
 import type { MultiLspOptions } from '../lsp/multi-manager.js'
 import { lspBadgeText } from '../format/lsp-diagnostics.js'
+import { tr } from '../i18n/index.js'
 /** T1.1：5 域投影 key（与 sessionProjections 注册表的 wire key 对齐）。 */
 type ProjectionKey = 'todos' | 'plan' | 'goal' | 'subagent' | 'subagentTiming'
 
@@ -606,7 +607,7 @@ export class TuiApp {
       })
       // workflow 活跃时子代理逐条完成会连发通知刷屏：静默单条，由 workflow/end 统一汇总。
       if (!subagentNotifySuppressed(this.workflowSurface.runningCount)) {
-        notifyOs({ title: 'dsh · 子代理完成', body: done.label }, this.prefs)
+        notifyOs({ title: tr('dsh · 子代理完成'), body: done.label }, this.prefs)
         writeBell(this.stdout, process.env, this.prefs)
       }
       this.renderBatcher.schedule()
@@ -618,7 +619,7 @@ export class TuiApp {
   private readonly workflowSurface = new WorkflowSurfaceController({
     onCompleted: (view, name) => {
       this.commitToScrollback({ text: formatWorkflowSummary(view, this.theme), trailingNewline: true })
-      notifyOs({ title: 'dsh · 工作流完成', body: name }, this.prefs)
+      notifyOs({ title: tr('dsh · 工作流完成'), body: name }, this.prefs)
       writeBell(this.stdout, process.env, this.prefs)
       this.flushLiveRender()
     },
@@ -901,7 +902,7 @@ export class TuiApp {
       toggleSubagentsPanel: () => {
         this.subagentsPanelVisible = !this.subagentsPanelVisible
         if (this.subagentsPanelVisible && this.ctx.reflect.get('subagents', false) === undefined)
-          this.echoWarn('⚠ subagents 服务不可用（未装配 subagent 插件），委派树面板无数据', '/doctor 体检')
+          this.echoWarn(tr('⚠ subagents 服务不可用（未装配 subagent 插件），委派树面板无数据'), tr('/doctor 体检'))
         // P1：常驻监控面板显隐写透（下次启动恢复）
         this.prefs.panels = { ...this.prefs.panels, subagents: this.subagentsPanelVisible }
         this.persistPrefs()
@@ -910,7 +911,7 @@ export class TuiApp {
       toggleWorkflowPanel: () => {
         this.workflowPanelVisible = !this.workflowPanelVisible
         if (this.workflowPanelVisible && scopedService(this.ctx, this.activeSessionId, 'workflowEngine') === undefined)
-          this.echoWarn('⚠ workflow 引擎不可用（未装配 workflow 插件），面板无运行数据', '/doctor 体检')
+          this.echoWarn(tr('⚠ workflow 引擎不可用（未装配 workflow 插件），面板无运行数据'), tr('/doctor 体检'))
         this.prefs.panels = { ...this.prefs.panels, workflow: this.workflowPanelVisible }
         this.persistPrefs()
         this.renderBatcher.schedule()
@@ -960,7 +961,7 @@ export class TuiApp {
     this.slash.register({
       name: 'steer',
       category: '会话',
-      description: '中轮转向（中途纠正方向）',
+      description: tr('中轮转向（中途纠正方向）'),
       argsHint: '<text>',
       run: (args) => { this.handleSteer(args.text) },
     })
@@ -970,7 +971,7 @@ export class TuiApp {
     this.slash.register({
       name: 'status',
       category: '面板',
-      description: '切换状态面板（goal/todos/plan 投影快照）',
+      description: tr('切换状态面板（goal/todos/plan 投影快照）'),
       run: () => { void this.inspect.toggle('status') },
     })
     // todos 紧凑待办面板显隐切换：无参切换显隐，all 展开/收起明细。数据源是
@@ -980,12 +981,12 @@ export class TuiApp {
     this.slash.register({
       name: 'todos',
       category: '面板',
-      description: '切换待办面板（无参显隐；all 看全表）',
+      description: tr('切换待办面板（无参显隐；all 看全表）'),
       argsHint: '[all]',
       run: ({ text }) => {
         const sub = text.trim()
         if (sub !== '' && sub !== 'all') {
-          this.echoWarn('用法: /todos [all]')
+          this.echoWarn(tr('用法: /todos [all]'))
           return
         }
         if (sub === 'all') {
@@ -996,7 +997,7 @@ export class TuiApp {
           if (!this.todosPanelVisible) { this.todosExpanded = false; this.todosAutoArmed = false }
         }
         if (this.todosPanelVisible && this.ctx.reflect.get('sessionProjections', false) === undefined)
-          this.echoWarn('⚠ sessionProjections 服务不可用（未装配 session-projection 插件），待办面板无数据', '/doctor 体检')
+          this.echoWarn(tr('⚠ sessionProjections 服务不可用（未装配 session-projection 插件），待办面板无数据'), tr('/doctor 体检'))
         this.renderBatcher.schedule()
       },
     })
@@ -1004,12 +1005,12 @@ export class TuiApp {
     this.slash.register({
       name: 'config',
       category: '配置',
-      description: '切换设置面板（n 通知 · d 密度）',
+      description: tr('切换设置面板（n 通知 · d 密度）'),
       argsHint: '[notify [on|off]]',
       run: async ({ text, echo }) => {
         const action = parseConfigNotifyArg(text)
         if (action === 'usage') {
-          echo('用法：/config  或  /config notify [on|off]')
+          echo(tr('用法：/config  或  /config notify [on|off]'))
           return
         }
         if (action !== null) {
@@ -1024,7 +1025,7 @@ export class TuiApp {
     this.slash.register({
       name: 'skills',
       category: '面板',
-      description: '切换技能浏览面板',
+      description: tr('切换技能浏览面板'),
       run: () => { void this.inspect.toggle('skills') },
     })
     // LSP：/lsp 诊断面板显隐切换（本地语言服务；懒创建 bridge——打开面板
@@ -1032,7 +1033,7 @@ export class TuiApp {
     this.slash.register({
       name: 'lsp',
       category: '面板',
-      description: '切换 LSP 诊断面板（本地语言服务）',
+      description: tr('切换 LSP 诊断面板（本地语言服务）'),
       run: () => { void this.inspect.toggle('lsp') },
     })
     // T5：/density 紧凑渲染开关（grok-build /compact-mode 语义；命令名避开
@@ -1040,14 +1041,14 @@ export class TuiApp {
     this.slash.register({
       name: 'density',
       category: '配置',
-      description: '切换紧凑渲染（工具输出与思考仅保留标题/摘要；default=设为启动默认）',
+      description: tr('切换紧凑渲染（工具输出与思考仅保留标题/摘要；default=设为启动默认）'),
       argsHint: '[default]',
       run: ({ text, echo }) => {
         const { persist } = splitDefaultFlag(text)
         if (persist) {
           this.prefs.compactMode = this.compactMode
           this.persistPrefs()
-          echo(echoSavedDefault('density', this.compactMode ? '紧凑' : '宽松'))
+          echo(echoSavedDefault('density', this.compactMode ? tr('紧凑') : tr('宽松')))
           return
         }
         this.compactMode = !this.compactMode
@@ -1055,7 +1056,7 @@ export class TuiApp {
           this.configProjection = { ...this.configProjection, tui: { ...configTuiFromPrefs(this.prefs), compactMode: this.compactMode } }
         }
         this.renderBatcher.schedule()
-        echo(echoSessionOnly('density', this.compactMode ? '紧凑' : '宽松'))
+        echo(echoSessionOnly('density', this.compactMode ? tr('紧凑') : tr('宽松')))
       },
     })
     // issue #51：vi/vim 编辑键位运行时开关（无参切换；带参 on|off 定向；default
@@ -1063,12 +1064,12 @@ export class TuiApp {
     this.slash.register({
       name: 'vim',
       category: '配置',
-      description: '切换 vi/vim 编辑键位（带参 default=设为启动默认）',
+      description: tr('切换 vi/vim 编辑键位（带参 default=设为启动默认）'),
       argsHint: '[on|off|default]',
       run: ({ text, echo }) => {
         const arg = text.trim()
         if (!['', 'on', 'off', 'default'].includes(arg)) {
-          echo('用法：/vim 或 /vim [on|off|default]')
+          echo(tr('用法：/vim 或 /vim [on|off|default]'))
           return
         }
         if (arg === 'default') {
@@ -1089,21 +1090,21 @@ export class TuiApp {
     this.slash.register({
       name: 'welcome',
       category: '配置',
-      description: '切换欢迎页风格（blue 默认 / star 紫鲸 / retro 复古，下次启动生效）',
+      description: tr('切换欢迎页风格（blue 默认 / star 紫鲸 / retro 复古，下次启动生效）'),
       argsHint: '[blue|star|retro]',
       run: ({ text, echo }) => {
         const arg = text.trim()
         if (arg === '') {
-          echo(`欢迎页风格：${this.prefs.welcomeStyle ?? 'blue'}（blue / star / retro，下次启动生效）`)
+          echo(`${tr('欢迎页风格：')}${this.prefs.welcomeStyle ?? 'blue'}${tr('（blue / star / retro，下次启动生效）')}`)
           return
         }
         if (arg !== 'blue' && arg !== 'star' && arg !== 'retro') {
-          echo('用法：/welcome 或 /welcome [blue|star|retro]')
+          echo(tr('用法：/welcome 或 /welcome [blue|star|retro]'))
           return
         }
         this.prefs.welcomeStyle = arg
         this.persistPrefs()
-        echo(`欢迎页风格已切换：${arg}（下次启动生效）`)
+        echo(`${tr('欢迎页风格已切换：')}${arg}${tr('（下次启动生效）')}`)
       },
     })
     // 输入区信息密度档位：full 两行（状态行 + 指标行）/ compact 仅状态行 /
@@ -1112,14 +1113,14 @@ export class TuiApp {
     this.slash.register({
       name: 'info',
       category: '配置',
-      description: '切换输入区信息密度（full 两行 / compact 状态行 / off 全关）',
+      description: tr('切换输入区信息密度（full 两行 / compact 状态行 / off 全关）'),
       run: ({ echo }) => {
         const current = this.prefs.footerInfo ?? 'full'
         const next = FOOTER_INFO_LEVELS[(FOOTER_INFO_LEVELS.indexOf(current) + 1) % FOOTER_INFO_LEVELS.length]
         this.prefs.footerInfo = next
         this.persistPrefs()
         this.renderBatcher.schedule()
-        echo(`输入区信息密度：${next}（${FOOTER_INFO_LEVELS.join(' / ')}）`)
+        echo(`${tr('输入区信息密度：')}${next}${tr('（')}${FOOTER_INFO_LEVELS.join(' / ')}${tr('）')}`)
       },
     })
     // 版本更新内容（/changelog）：读包内 CHANGELOG.md，默认当前版本条目；
@@ -1127,18 +1128,18 @@ export class TuiApp {
     this.slash.register({
       name: 'changelog',
       category: '系统',
-      description: '查看版本更新内容（默认当前版本；all 全部；N 最近 N 版）',
+      description: tr('查看版本更新内容（默认当前版本；all 全部；N 最近 N 版）'),
       argsHint: '[all|N]',
       run: ({ text, echo }) => {
         const arg = text.trim()
         const changelog = readOwnChangelog(fileURLToPath(new URL('.', import.meta.url)))
         if (changelog === null) {
-          echo('未找到 CHANGELOG.md（开发安装可能缺失，见仓库根）')
+          echo(tr('未找到 CHANGELOG.md（开发安装可能缺失，见仓库根）'))
           return
         }
         const entries = parseChangelog(changelog)
         if (entries.length === 0) {
-          echo('CHANGELOG 暂无条目')
+          echo(tr('CHANGELOG 暂无条目'))
           return
         }
         let selected: typeof entries
@@ -1151,11 +1152,11 @@ export class TuiApp {
         } else if (/^\d+$/.test(arg)) {
           selected = entries.slice(0, Math.min(Number(arg), entries.length))
         } else {
-          echo('用法: /changelog（当前版本）  /changelog all（全部）  /changelog N（最近 N 版）')
+          echo(tr('用法: /changelog（当前版本）  /changelog all（全部）  /changelog N（最近 N 版）'))
           return
         }
         for (const entry of selected) {
-          const title = entry.date === null ? `## ${entry.version}` : `## ${entry.version}（${entry.date}）`
+          const title = entry.date === null ? `## ${entry.version}` : `## ${entry.version}${tr('（')}${entry.date}${tr('）')}`
           echo(title)
           for (const line of simplifyChangelogMarkdown(entry.body)) {
             echo(line === '' ? '' : `  ${line}`)
@@ -1166,18 +1167,18 @@ export class TuiApp {
     this.slash.register({
       name: 'glance',
       category: '配置',
-      description: '切换 footer metrics 段显隐（如 /glance cost）',
+      description: tr('切换 footer metrics 段显隐（如 /glance cost）'),
       argsHint: '[segment]',
       run: ({ text, echo }) => {
         const seg = text.trim()
         const hidden = new Set(this.prefs.glance?.hideSegments ?? [])
         if (seg === '') {
-          const hiddenText = hidden.size === 0 ? '无' : [...hidden].join(', ')
-          echo(`metrics 段：隐藏 ${hiddenText}；可切换：${GLANCE_HIDEABLE_SEGMENTS.join(', ')}`)
+          const hiddenText = hidden.size === 0 ? tr('无') : [...hidden].join(', ')
+          echo(`${tr('metrics 段：隐藏 ')}${hiddenText}${tr('；可切换：')}${GLANCE_HIDEABLE_SEGMENTS.join(', ')}`)
           return
         }
         if (!(GLANCE_HIDEABLE_SEGMENTS as readonly string[]).includes(seg)) {
-          echo(`未知段: ${seg}。可切换: ${GLANCE_HIDEABLE_SEGMENTS.join(', ')}`)
+          echo(`${tr('未知段: ')}${seg}${tr('。可切换: ')}${GLANCE_HIDEABLE_SEGMENTS.join(', ')}`)
           return
         }
         const key = seg as GlanceHideableSegment
@@ -1185,7 +1186,7 @@ export class TuiApp {
         else hidden.add(key)
         this.prefs.glance = { hideSegments: [...hidden] }
         this.persistPrefs()
-        echo(`${key} 段已${hidden.has(key) ? '隐藏' : '恢复'}`)
+        echo(`${key}${tr(' 段已')}${hidden.has(key) ? tr('隐藏') : tr('恢复')}`)
         this.renderBatcher.schedule()
       },
     })
@@ -1369,9 +1370,9 @@ export class TuiApp {
     // 指引，绝不静默降级。
     if (typeof Session.prototype.snapshotEvents !== 'function') {
       throw new Error(
-        'dsh-tianshu-tui 需要 0.1.2-rc.1+ 官方宿主（检测到旧线）。'
-        + '请升级官方 CLI：pnpm dlx @deepseek-ai/dsh@latest（或 @next）；'
-        + '或回退本插件：dsh plugin --profile tui add @huiliyi37/dsh-tianshu-tui@0.1.2-rc.28',
+        tr('dsh-tianshu-tui 需要 0.1.2-rc.1+ 官方宿主（检测到旧线）。')
+        + tr('请升级官方 CLI：pnpm dlx @deepseek-ai/dsh@latest（或 @next）；')
+        + tr('或回退本插件：dsh plugin --profile tui add @huiliyi37/dsh-tianshu-tui@0.1.2-rc.28'),
       )
     }
     // 宿主服务就绪窗口：cmdlineArgs/appExit 由 launcher 在 boot prepare 提供，
@@ -1556,7 +1557,7 @@ export class TuiApp {
       this.echoWarn(this.pendingUpdateFailNotice)
       this.pendingUpdateFailNotice = null
     }
-    for (const w of this.themeWarnings) this.echoWarn(`⚠ 主题警告：${w}`, '/theme 检查自定义主题')
+    for (const w of this.themeWarnings) this.echoWarn(`${tr('⚠ 主题警告：')}${w}`, tr('/theme 检查自定义主题'))
     this.flushLiveRender()
     // A3：纯位置参数作为初始 prompt（`dsh --profile tui "修复这个 bug"`）。
     if (initialPrompt !== '') {
@@ -1609,10 +1610,10 @@ export class TuiApp {
   notifyPluginUpdateFailed(error: string): void {
     if (this.disposed) return
     const text = [
-      `⚠ 自更新失败：${error}`,
-      '  · 重启 dsh 会自动重试（网络恢复后即可成功）',
-      `  · 手动更新：npx -y @deepseek-ai/dsh plugin --profile tui add ${updateNoticePackage}@latest`,
-      '  · 不想再看到此提示：启动前设 DSH_TUI_SKIP_UPDATE=1',
+      `${tr('⚠ 自更新失败：')}${error}`,
+      tr('  · 重启 dsh 会自动重试（网络恢复后即可成功）'),
+      `${tr('  · 手动更新：npx -y @deepseek-ai/dsh plugin --profile tui add ')}${updateNoticePackage}@latest`,
+      tr('  · 不想再看到此提示：启动前设 DSH_TUI_SKIP_UPDATE=1'),
     ].join('\n')
     if (!this.attached) {
       this.pendingUpdateFailNotice = text
@@ -1643,7 +1644,7 @@ export class TuiApp {
       const imgResult = await readImageFromClipboard()
       if (!this.overlayPasteIsCurrent(overlay, active, target, epoch, sequence)) return
       if (imgResult) {
-        target.showNotice('剪贴板是图片，未写入文本字段；复制文本后重试')
+        target.showNotice(tr('剪贴板是图片，未写入文本字段；复制文本后重试'))
         overlay.rerender()
         return
       }
@@ -1663,7 +1664,7 @@ export class TuiApp {
           return
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
-          this.commitToScrollback({ text: color(`⚠ 剪贴板图片处理失败: ${message}`, this.theme.warning), trailingNewline: true })
+          this.commitToScrollback({ text: color(`${tr('⚠ 剪贴板图片处理失败: ')}${message}`, this.theme.warning), trailingNewline: true })
           this.flushLiveRender()
           return
         }
@@ -1673,7 +1674,7 @@ export class TuiApp {
     // 粘贴内容看起来像图片路径 → 尝试加载为附件；失败回退为普通文本。
     if (trimmed && looksLikeImagePath(trimmed) && !trimmed.includes('\n')) {
       if (this.inputLine.images.length >= MAX_IMAGES) {
-        this.commitToScrollback({ text: color(`⚠ 最多附加 ${MAX_IMAGES} 张图片`, this.theme.warning), trailingNewline: true })
+        this.commitToScrollback({ text: color(`${tr('⚠ 最多附加 ')}${MAX_IMAGES}${tr(' 张图片')}`, this.theme.warning), trailingNewline: true })
         this.flushLiveRender()
         return
       }
@@ -1684,7 +1685,7 @@ export class TuiApp {
         return
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
-        this.commitToScrollback({ text: color(`⚠ 图片加载失败: ${message}`, this.theme.warning), trailingNewline: true })
+        this.commitToScrollback({ text: color(`${tr('⚠ 图片加载失败: ')}${message}`, this.theme.warning), trailingNewline: true })
         this.flushLiveRender()
         // fallthrough to normal text paste
       }
@@ -1712,7 +1713,7 @@ export class TuiApp {
       const result = await readImageFromClipboard()
       if (result) {
         if (this.inputLine.images.length >= MAX_IMAGES) {
-          this.commitToScrollback({ text: color(`⚠ 最多附加 ${MAX_IMAGES} 张图片`, this.theme.warning), trailingNewline: true })
+          this.commitToScrollback({ text: color(`${tr('⚠ 最多附加 ')}${MAX_IMAGES}${tr(' 张图片')}`, this.theme.warning), trailingNewline: true })
           this.flushLiveRender()
           return
         }
@@ -1723,7 +1724,7 @@ export class TuiApp {
       // 管线处理失败（超限压缩失败等）——回显原因；剪贴板读图本身失败
       // （readImageFromClipboard 内部吞掉返回 null）走下方文本 fallback。
       const message = err instanceof Error ? err.message : String(err)
-      this.commitToScrollback({ text: color(`⚠ 剪贴板图片处理失败: ${message}`, this.theme.warning), trailingNewline: true })
+      this.commitToScrollback({ text: color(`${tr('⚠ 剪贴板图片处理失败: ')}${message}`, this.theme.warning), trailingNewline: true })
       this.flushLiveRender()
       return
     }
@@ -1734,7 +1735,7 @@ export class TuiApp {
     } else {
       // P1-1：无图且无文本——回显一行提示。「无内容」覆盖剪贴板为空与读图/读文
       // 失败两种情形，不误指为工具链缺失；括号保留读图工具链的诊断信息。
-      this.echoWarn('⚠ 剪贴板无内容可粘贴（读图需 osascript / wl-paste / xclip / PowerShell）')
+      this.echoWarn(tr('⚠ 剪贴板无内容可粘贴（读图需 osascript / wl-paste / xclip / PowerShell）'))
     }
   }
 
@@ -1977,8 +1978,8 @@ export class TuiApp {
     const recent = others[0]
     const resumeAvailable = others.length > 0
     const resumeLabel = recent === undefined
-      ? '恢复会话'
-      : `恢复 · ${formatSessionAge(recent.createdAt, Date.now())}`
+      ? tr('恢复会话')
+      : `${tr('恢复 · ')}${formatSessionAge(recent.createdAt, Date.now())}`
 
     const whale = formatWhaleLogo({ width: cols, rows: this.stdout.rows })
 
@@ -1987,19 +1988,19 @@ export class TuiApp {
 
     const tips: WelcomeTipItem[] = []
     // 环境待办优先：API key 缺失是硬阻塞，排最前引导（/key 配置密钥）。
-    if (!this.apiKeyReady) tips.push({ keyHint: '/key', label: '配置 API key' })
+    if (!this.apiKeyReady) tips.push({ keyHint: '/key', label: tr('配置 API key') })
     // 首次运行 onboarding 排第二；展示后写 prefs.onboarded 落盘。VITEST
     // （prefsPath null）下不落盘、恒展示（测试密封）。
     if (this.prefs.onboarded !== true) {
-      tips.push({ keyHint: '/help', label: '命令帮助面板' })
+      tips.push({ keyHint: '/help', label: tr('命令帮助面板') })
       this.prefs.onboarded = true
       this.persistPrefs()
     }
     tips.push(
-      { keyHint: 'ctrl+n', label: '新会话' },
+      { keyHint: 'ctrl+n', label: tr('新会话') },
       { keyHint: 'ctrl+s', label: resumeLabel, available: resumeAvailable },
-      { keyHint: 'ctrl+p', label: '命令面板' },
-      { keyHint: '/', label: 'slash 命令' },
+      { keyHint: 'ctrl+p', label: tr('命令面板') },
+      { keyHint: '/', label: tr('slash 命令') },
     )
     tips.length = Math.min(tips.length, WELCOME_TIPS_MAX_ITEMS)
     const ownVersion = readOwnVersion(fileURLToPath(new URL('.', import.meta.url)))
@@ -2113,9 +2114,9 @@ export class TuiApp {
 
   /** A3：create({ seed }) 铸 child；禁止 fork 后再 resume live 会话。 */
   async forkSession(opts?: { directive?: string }): Promise<SessionId> {
-    if (this.activeSessionId === null) throw new Error('当前无会话可分叉')
+    if (this.activeSessionId === null) throw new Error(tr('当前无会话可分叉'))
     const parent = this.ctx.sessions.get(this.activeSessionId)
-    if (parent === undefined) throw new Error('当前无会话可分叉')
+    if (parent === undefined) throw new Error(tr('当前无会话可分叉'))
     const forked = await createForkedAgent(this.ctx, parent, this.activeSessionId, process.cwd())
     await this.detachProjections({ keepHandle: true })
     this.dynamicRowsHighWater = 0
@@ -2138,7 +2139,7 @@ export class TuiApp {
     const rewind = this.rewindOverlay
     if (overlay === null || rewind === null || this.activeSessionId === null) return false
     const messages = collectUserRewindCheckpoints(this.transcript?.view.messages ?? [])
-    if (messages.length === 0) { this.echoWarn('没有可回退的用户消息'); return false }
+    if (messages.length === 0) { this.echoWarn(tr('没有可回退的用户消息')); return false }
     rewind.setMessages(messages, (mode, atSeq) => this.executeRewind(mode, atSeq))
     overlay.activate('rewind')
     return true
@@ -2168,11 +2169,11 @@ export class TuiApp {
    */
   private async exportTranscript(path?: string): Promise<string> {
     if (this.activeSessionId === null) {
-      throw new Error('当前无会话，无法导出')
+      throw new Error(tr('当前无会话，无法导出'))
     }
     const session = this.ctx.sessions.get(this.activeSessionId)
     if (session === undefined) {
-      throw new Error('会话不存在，无法导出')
+      throw new Error(tr('会话不存在，无法导出'))
     }
     const target = path ?? join(session.header.cwd ?? process.cwd(), `dsh-export-${session.id}.md`)
     const markdown = renderSessionExport(session.snapshotEvents(), {
@@ -2328,8 +2329,8 @@ export class TuiApp {
         if (persist) void facet?.saveSelection(selection)
         const hot = this.switchLiveModel(selection as ModelSelection)
         const text = persist
-          ? (hot ? echoSavedDefault('effort', level) : `${echoSavedDefault('effort', level)}（当前会话不可热切）`)
-          : (hot ? echoSessionOnly('effort', level) : `推理等级已设为 ${level}（当前会话不可热切）。选择器按 S 或 /effort default 可设为启动默认`)
+          ? (hot ? echoSavedDefault('effort', level) : `${echoSavedDefault('effort', level)}${tr('（当前会话不可热切）')}`)
+          : (hot ? echoSessionOnly('effort', level) : `${tr('推理等级已设为 ')}${level}${tr('（当前会话不可热切）。选择器按 S 或 /effort default 可设为启动默认')}`)
         this.commitToScrollback({ text, trailingNewline: true })
       },
     })
@@ -2342,7 +2343,7 @@ export class TuiApp {
     if (overlay === null || picker === null) return
     const rows = await listSessions(this.ctx)
     if (rows.length === 0) {
-      this.echoWarn('⚠ 当前无会话，会话选择器不可用')
+      this.echoWarn(tr('⚠ 当前无会话，会话选择器不可用'))
       return
     }
     const titled = []
@@ -2354,7 +2355,7 @@ export class TuiApp {
       now: Date.now(),
       ...(this.activeSessionId === null ? {} : { activeId: this.activeSessionId }),
     })
-    picker.open('选择会话', items, (item) => {
+    picker.open(tr('选择会话'), items, (item) => {
       this.switchSessionGuarded(SessionId(item.value))
     }, selectedIndex)
     overlay.activate('picker')
@@ -2395,7 +2396,7 @@ export class TuiApp {
     const histories = this.ctx.reflect.get('fsSnapshot.histories', false) as
       | Map<string, { rewindToBoundary(ids: Set<string>): Promise<{ changed: string[]; skipped: number }> }> | undefined
     if (histories === undefined) {
-      throw new Error('rewind 文件快照不可用（fs-snapshot 未装配）')
+      throw new Error(tr('rewind 文件快照不可用（fs-snapshot 未装配）'))
     }
     const fh = histories.get(this.activeSessionId)
     if (fh === undefined) return { changed: 0, skipped: 0 } // 该会话无快照记录（无写工具调用）
@@ -2429,7 +2430,7 @@ export class TuiApp {
     if (session === undefined) return
     const truncate = (session as { truncate?: (atSeq: number) => void }).truncate
     if (truncate === undefined) {
-      throw new Error('会话截断不可用：宿主 dsh-session 不支持 truncate（rewind 请改用 fork 派生）')
+      throw new Error(tr('会话截断不可用：宿主 dsh-session 不支持 truncate（rewind 请改用 fork 派生）'))
     }
     truncate.call(session, atSeq)
   }
@@ -2476,7 +2477,7 @@ export class TuiApp {
 
   /** 按键面切换：失败回显 ⚠ 并停留原会话（rejection 不逃逸成 unhandled）。 */
   private switchSessionGuarded(id: SessionId): void {
-    void this.switchSession(id).catch((error: unknown) => { this.echoWarn(`⚠ 会话切换失败: ${error instanceof Error ? error.message : String(error)}`, '/session 重新选择') })
+    void this.switchSession(id).catch((error: unknown) => { this.echoWarn(`${tr('⚠ 会话切换失败: ')}${error instanceof Error ? error.message : String(error)}`, tr('/session 重新选择')) })
   }
 
   /** 首次非空 todos 打开紧凑卡；关掉或 /clear 后本会话不再自动开。 */
@@ -2612,16 +2613,16 @@ export class TuiApp {
     this.taskNotice = null
     // 切会话清空运行中排队：待发消息属于原会话上下文，不跨会话投递（行数回显）。
     if (this.submitQueue.size() > 0) {
-      this.commitToScrollback({ text: `⚠ 切换会话：丢弃 ${this.submitQueue.size()} 条未发送的排队消息`, trailingNewline: true })
+      this.commitToScrollback({ text: `${tr('⚠ 切换会话：丢弃 ')}${this.submitQueue.size()}${tr(' 条未发送的排队消息')}`, trailingNewline: true })
     }
     this.submitQueue.clear(); this.errorAnnouncer.reset()
     const tasks = this.ctx.reflect.get('tasks', false) as TasksFacet | undefined
     if (tasks !== undefined) {
       this.taskSnapshots = tasks.list()
       this.taskDoneDisposer = tasks.onTaskDone((snapshot) => {
-        this.taskNotice = `✓ 任务完成: ${snapshot.label}`
+        this.taskNotice = `${tr('✓ 任务完成: ')}${snapshot.label}`
         this.taskSnapshots = tasks.list()
-        notifyOs({ title: 'dsh · 任务完成', body: snapshot.label }, this.prefs)
+        notifyOs({ title: tr('dsh · 任务完成'), body: snapshot.label }, this.prefs)
         writeBell(this.stdout, process.env, this.prefs)
         this.flushLiveRender()
       })
@@ -2689,7 +2690,7 @@ export class TuiApp {
     // 只发图片：可达时补占位 prompt，让后端能触发 run；不可达时无有效内容可发。
     if (!trimmed && hasImages) {
       if (imagesReachable) {
-        text = '📎 图片消息'
+        text = tr('📎 图片消息')
         trimmed = text
       } else {
         // 有图但不可发送：只回显附件气泡+警告，不触发 followup。
@@ -2745,7 +2746,7 @@ export class TuiApp {
       this.commitSurface.userPrompt(item.text, item.images); this.errorAnnouncer.recordSubmitted(item.text)
       void this.controls?.followup(item.text, item.images).catch((err: unknown) => {
         const message = err instanceof Error ? err.message : String(err)
-        this.errorAnnouncer.notifyDeliveryFailure(item.text, message, this.inputLine.value === '', '排队消息发送失败')
+        this.errorAnnouncer.notifyDeliveryFailure(item.text, message, this.inputLine.value === '', tr('排队消息发送失败'))
         this.flushLiveRender()
       })
     }
@@ -2777,9 +2778,9 @@ export class TuiApp {
       // 无相近命令时引导 /help，避免信息过载。
       const suggestions = suggestCommands(input, this.slash.list())
       const hint = suggestions.length > 0
-        ? `你是要找: ${suggestions.map(c => `/${c.name}`).join(' ')}?`
-        : '试试 /help 查看全部命令'
-      echo(`未知命令: ${input}。${hint}`)
+        ? `${tr('你是要找: ')}${suggestions.map(c => `/${c.name}`).join(' ')}?`
+        : tr('试试 /help 查看全部命令')
+      echo(`${tr('未知命令: ')}${input}${tr('。')}${hint}`)
       this.flushLiveRender()
       return
     }
@@ -2796,7 +2797,7 @@ export class TuiApp {
       this.inputController.recordSlashUse(parsed.command.name)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      echo(`⚠ 命令执行失败: ${message}`)
+      echo(`${tr('⚠ 命令执行失败: ')}${message}`)
     }
     this.flushLiveRender()
   }
@@ -2819,14 +2820,14 @@ export class TuiApp {
       const execution = await commands.execute(agent, input, new AbortController().signal)
       if (execution === undefined) return false
       if (execution.result.kind === 'success') {
-        echo(execution.result.text ?? '已执行')
+        echo(execution.result.text ?? tr('已执行'))
       } else {
-        echo(`⚠ 命令执行失败: ${execution.result.text}`)
+        echo(`${tr('⚠ 命令执行失败: ')}${execution.result.text}`)
       }
       return true
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      echo(`⚠ 命令执行失败: ${message}`)
+      echo(`${tr('⚠ 命令执行失败: ')}${message}`)
       return true
     }
   }
@@ -2910,7 +2911,7 @@ export class TuiApp {
     this.streamRenderer.reset()
     this.discardReasoning()
     this.pendingCallTitles.clear()
-    this.commitToScrollback({ text: '⏹ 已取消', trailingNewline: true })
+    this.commitToScrollback({ text: tr('⏹ 已取消'), trailingNewline: true })
     this.flushLiveRender()
   }
 
@@ -2934,7 +2935,7 @@ export class TuiApp {
       this.inputLine.setValue(content)
     } else if (editorError !== null) {
       // P1-1：编辑器启动失败不再静默——回显实际生效命令与 spawn 原因
-      this.echoWarn(`⚠ 外部编辑器启动失败（${this.editorCommand ?? getEditorCommand()}）：${editorError}`)
+      this.echoWarn(`${tr('⚠ 外部编辑器启动失败（')}${this.editorCommand ?? getEditorCommand()}${tr('）：')}${editorError}`)
     }
     this.flushLiveRender()
   }
@@ -3063,7 +3064,7 @@ export class TuiApp {
       | { set(agent: unknown, active: boolean): string } | undefined
     if (planMode === undefined) {
       // 只在进入 plan 时提示（退出分支由 Always-Approve 本地态驱动，无需服务）。
-      if (active) this.echoWarn('⚠ planMode 服务不可用（未装配 plan 插件），无法进入 plan 模式', '/doctor 体检')
+      if (active) this.echoWarn(tr('⚠ planMode 服务不可用（未装配 plan 插件），无法进入 plan 模式'), tr('/doctor 体检'))
       return
     }
     if (this.activeSessionId === null) return
@@ -3093,7 +3094,7 @@ export class TuiApp {
     const text = await readTextFromClipboard()
     if (!this.overlayPasteIsCurrent(overlay, active, target, epoch, sequence)) return
     if (typeof text !== 'string' || text.trim() === '') {
-      target.showNotice('剪贴板无内容可粘贴；复制文本后按 Ctrl+V 重试')
+      target.showNotice(tr('剪贴板无内容可粘贴；复制文本后按 Ctrl+V 重试'))
       overlay.rerender()
       return
     }
@@ -3161,7 +3162,7 @@ export class TuiApp {
       // P1-1：终端不支持 OSC52 时每进程首次提示一次；序列仍写出（保持无害忽略降级）
       if (!supportsOsc52() && !this.osc52WarningShown) {
         this.osc52WarningShown = true
-        this.echoWarn('⚠ 终端不支持 OSC52 复制（Ctrl+K/Alt+W 无法写入系统剪贴板，请用终端原生复制）')
+        this.echoWarn(tr('⚠ 终端不支持 OSC52 复制（Ctrl+K/Alt+W 无法写入系统剪贴板，请用终端原生复制）'))
       }
       this.stdout.write(osc52Clipboard(clip))
     }
@@ -3454,7 +3455,7 @@ export class TuiApp {
         // 读成一段连续答案（#58 余项）。只在确有正文时标记：纯推理/空流不产生
         // 读者可见内容，标记反而误导。判据走官方 record-level reader（不物化）。
         if (assistantStreamHasVisibleText(event.data.stream)) {
-          this.blockWriter.push('\n⟳ 未完成的尝试\n')
+          this.blockWriter.push(tr('\n⟳ 未完成的尝试\n'))
         }
         this.ingestAssistantStream(event.data.stream)
         break
@@ -3911,7 +3912,7 @@ export class TuiApp {
           expanded: true,
         }, theme)
         for (const line of reasoningLines) lines.push({ text: line })
-        lines.push({ text: color('— ctrl+o 收起', theme.dim) })
+        lines.push({ text: color(tr('— ctrl+o 收起'), theme.dim) })
       } else if (this.lastReasoningBlock !== null) {
         const blockLines = formatReasoningBlock({
           text: this.lastReasoningBlock.text,
@@ -3919,7 +3920,7 @@ export class TuiApp {
           expanded: true,
         }, theme)
         for (const line of blockLines) lines.push({ text: line })
-        lines.push({ text: color('— ctrl+o 收起', theme.dim) })
+        lines.push({ text: color(tr('— ctrl+o 收起'), theme.dim) })
       }
     }
 
@@ -3974,7 +3975,7 @@ export class TuiApp {
       for (const line of rows) lines.push({ text: line })
     }
     if (overflow > 0) {
-      lines.push({ text: color(` …(+${overflow}) 个工具进行中`, theme.muted) })
+      lines.push({ text: color(` …(+${overflow}${tr(') 个工具进行中')}`, theme.muted) })
     }
 
     if (this.activityBandEnabled) {
@@ -4003,7 +4004,7 @@ export class TuiApp {
         lines.push({ text: line })
       }
       if (questionPeek.feedbackMode) {
-        lines.push({ text: color('📝 反馈输入中（Enter 提交 / Esc / Ctrl+C 返回选项）', theme.muted) })
+        lines.push({ text: color(tr('📝 反馈输入中（Enter 提交 / Esc / Ctrl+C 返回选项）'), theme.muted) })
       }
     }
     // 审批键位提示段：registry 逐帧投影（p 段随前缀可得性进出）；footer 与审批卡键位行同消费（同源）。

@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
+import { tr } from './i18n/index.js'
 /** 与 package.json name 对齐；profile 依赖键、npm 包名都用它。 */
 export const TUI_PACKAGE = '@huiliyi37/dsh-tianshu-tui'
 
@@ -350,7 +351,7 @@ export async function runSelfUpdate(opts: RunSelfUpdateOptions = {}): Promise<Up
 }
 
 export function updateNoticeText(version: string): string {
-  return `插件已更新到 ${version}。输入 /changelog 查看本次更新内容；/restart 立即生效（或 Ctrl+Q 退出后重新启动 dsh）`
+  return `${tr('插件已更新到 ')}${version}${tr('。输入 /changelog 查看本次更新内容；/restart 立即生效（或 Ctrl+Q 退出后重新启动 dsh）')}`
 }
 
 /** 失败提示里的手动更新命令包名（app 侧文案引用）。 */
@@ -358,7 +359,7 @@ export const updateNoticePackage = TUI_PACKAGE
 
 /** 更新后将自动重启（autoRestartOnUpdate）时的提示。 */
 export function autoRestartNoticeText(version: string): string {
-  return `插件已更新到 ${version}，正在自动重启…`
+  return `${tr('插件已更新到 ')}${version}${tr('，正在自动重启…')}`
 }
 
 /** /update 检查结果（只查不装——用户看到提示后手动更新）。 */
@@ -386,12 +387,12 @@ export interface CheckForUpdateOptions {
 export async function checkForUpdate(opts: CheckForUpdateOptions = {}): Promise<UpdateCheckResult> {
   const env = opts.env ?? process.env
   if (env.CI === 'true' || env.CI === '1' || env.VITEST === 'true') {
-    return { kind: 'failed', error: 'CI/测试环境跳过更新检查' }
+    return { kind: 'failed', error: tr('CI/测试环境跳过更新检查') }
   }
   let current: string
   try {
     const own = opts.currentVersion ?? readOwnVersion(process.cwd())
-    if (own === undefined) return { kind: 'failed', error: '无法读取本包版本' }
+    if (own === undefined) return { kind: 'failed', error: tr('无法读取本包版本') }
     current = own
   } catch (err) {
     return { kind: 'failed', error: err instanceof Error ? err.message : String(err) }
@@ -403,7 +404,7 @@ export async function checkForUpdate(opts: CheckForUpdateOptions = {}): Promise<
       ...(opts.fetchNet === undefined ? {} : { fetchNet: opts.fetchNet }),
     })
     if (latest === null) {
-      return { kind: 'failed', error: '无法获取 npm latest（网络失败或注册表无响应）' }
+      return { kind: 'failed', error: tr('无法获取 npm latest（网络失败或注册表无响应）') }
     }
     if (latest === current) return { kind: 'current', current }
     return { kind: 'latest', latest, current }

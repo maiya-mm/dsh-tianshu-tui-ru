@@ -1,12 +1,3 @@
-/**
- * 官方 shipped 预设的展示目录：短名、能力、工具集。
- *
- * 花名册 list() 已有声明行的 name/description；本表补「工具集 + 能力」
- * 给 /preset 列表与 footer/顶栏短名。id 对齐本包 cordis.patch.yml 的
- * preset-{standard,ptc,minimal,cordis} 声明行（与官方 web-app 0.2.2-rc.3 预设同源）。
- *
- * @module @huiliyi37/dsh-tianshu-tui/preset-catalog
- */
 /** 一套 shipped 预设的展示文案。 */
 export interface ShippedPresetBlurb {
     /** 目录名，也是 /preset 实参。 */

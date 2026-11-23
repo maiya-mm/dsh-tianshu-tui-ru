@@ -18,6 +18,7 @@ import { color } from '../engine/ansi.js'
 import { truncateToDisplayWidth } from '../width.js'
 import { fileDiffStats, renderFileDiff } from './tool-view-card.js'
 
+import { tr } from '../i18n/index.js'
 /** 审批场景内容行硬上限（审批期间键锁只 y/N/Esc，diff 必须无翻页全可见）。 */
 export const APPROVAL_DIFF_MAX_LINES = 12
 
@@ -101,10 +102,10 @@ export function commandPrefixForRequest(
 
 /** 危险命令模式（审批卡标注用——只展示警示，不拦截）。 */
 const DANGER_PATTERNS: readonly { pattern: RegExp; label: string }[] = [
-  { pattern: /\brm\s+(?:-\w+\s+)*-\w*[rR]\w*/, label: 'rm 递归删除' },
-  { pattern: /\b(?:curl|wget)\b[^|]*\|\s*(?:sudo\s+)?(?:ba|z)?sh\b/, label: '远程脚本管道执行' },
-  { pattern: /\(\s*\)\s*\{\s*:\|:&\s*\}/, label: 'fork 炸弹' },
-  { pattern: /\bmkfs(?:\.\w+)?\b/, label: '文件系统格式化' },
+  { pattern: /\brm\s+(?:-\w+\s+)*-\w*[rR]\w*/, label: tr('rm 递归删除') },
+  { pattern: /\b(?:curl|wget)\b[^|]*\|\s*(?:sudo\s+)?(?:ba|z)?sh\b/, label: tr('远程脚本管道执行') },
+  { pattern: /\(\s*\)\s*\{\s*:\|:&\s*\}/, label: tr('fork 炸弹') },
+  { pattern: /\bmkfs(?:\.\w+)?\b/, label: tr('文件系统格式化') },
   { pattern: /\bdd\b[^|&;]*\bof=\/dev\//, label: 'dd 覆写块设备' },
 ]
 
@@ -124,7 +125,7 @@ function formatCommandPreview(command: string, theme: RivetTheme): string[] {
   const lines = [color(`$ ${truncateToDisplayWidth(firstLine, 72)}${more}`, theme.warning)]
   const dangers = detectDangerPatterns(command)
   if (dangers.length > 0) {
-    lines.push(color(`⚠ 危险模式：${dangers.join(' · ')}`, theme.error))
+    lines.push(color(`${tr('⚠ 危险模式：')}${dangers.join(' · ')}`, theme.error))
   }
   return lines
 }
@@ -151,12 +152,12 @@ function formatWritePreview(
   theme: RivetTheme,
 ): string[] {
   const head = content.split('\n').slice(0, WRITE_PREVIEW_LINES)
-  const lines = [`${path} 新文件内容预览:`]
+  const lines = [`${path}${tr(' 新文件内容预览:')}`]
   for (const line of head) lines.push(`  ${line}`)
   if (content.split('\n').length > WRITE_PREVIEW_LINES) {
     // muted 缺失是真实边界（spec 显式构造缺 muted 的 theme 验证省略号分支）
     const muted = theme.muted as string | undefined
-    lines.push(muted === undefined ? '  …' : `  …（共 ${content.split('\n').length} 行）`)
+    lines.push(muted === undefined ? '  …' : `${tr('  …（共 ')}${content.split('\n').length}${tr(' 行）')}`)
   }
   return lines
 }

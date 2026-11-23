@@ -32,6 +32,7 @@ import { controlsFromHandle } from '../adapter/send.js'
 import { joinPreset, presetJoinFacet } from '../adapter/preset-join.js'
 import { resumeModelSelection } from './session-manager.js'
 
+import { tr } from '../i18n/index.js'
 /** btw 挂起态快照（renderLive 消费；无挂起时 peek() 返回 null）。 */
 export interface BtwPeek {
   /** loading：等待答案；done：答案定稿待折叠；error：超时/失败。 */
@@ -124,7 +125,7 @@ export class BtwController {
   async ask(question: string): Promise<void> {
     if (this.state !== null) return
     const activeId = this.activeSessionId()
-    if (activeId === null) throw new Error('当前无活跃会话，无法发起侧问')
+    if (activeId === null) throw new Error(tr('当前无活跃会话，无法发起侧问'))
     const session = this.ctx.sessions.get(activeId)
     if (session === undefined) throw new Error(`unknown session: ${activeId}`)
     const btwId = SessionId(`session-btw-${randomUUID()}`)
@@ -185,7 +186,7 @@ export class BtwController {
     this.handle = handle
     this.feed = feed
     this.state = { status: 'loading', question }
-    this.timer = setTimeout(() => { this.fail('等待侧问回答超时（无响应）') }, this.timeoutMs)
+    this.timer = setTimeout(() => { this.fail(tr('等待侧问回答超时（无响应）')) }, this.timeoutMs)
     try {
       await controlsFromHandle(handle).followup(question)
     } catch (err) {

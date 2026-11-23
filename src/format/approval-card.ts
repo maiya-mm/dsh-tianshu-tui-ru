@@ -12,6 +12,7 @@ import { boxCharsFor } from '../box-chars.js'
 import type { RivetTheme } from '../theme.js'
 import { displayWidth, truncateToDisplayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * 键位提示段 → 审批卡键位行：首 token 加方括号（'y 允许' → '[y] 允许'）。
  * 段来源是 approval 域动作的 footerHint 投影（actions/projections；footer 同源）。
@@ -26,7 +27,7 @@ export function approvalKeyHintLine(segments: readonly string[]): string {
 
 /** 键位行缺省提示段（调用方未投影动作表时的兜底；与 approval 域动作 footerHint 同源对齐）。 */
 const DEFAULT_KEY_HINT_SEGMENTS: readonly string[] =
-  ['y 允许', 't 记住此工具', 'a 全放行', 'n 拒绝', 'f 拒绝并说明', 'esc 取消']
+  [tr('y 允许'), tr('t 记住此工具'), tr('a 全放行'), tr('n 拒绝'), tr('f 拒绝并说明'), tr('esc 取消')]
 
 /** formatApprovalCard 的渲染输入。 */
 export interface FormatApprovalCardInput {
@@ -83,11 +84,11 @@ export function formatRailsBlock(
  */
 export function formatApprovalCard(input: FormatApprovalCardInput, theme: RivetTheme): string[] {
   if (input.columns <= 0) return []
-  const why = input.reason === undefined || input.reason === '' ? '' : `（${input.reason}）`
+  const why = input.reason === undefined || input.reason === '' ? '' : `${tr('（')}${input.reason}${tr('）')}`
   const diff = input.diffLines
   const hasDiff = diff !== undefined && diff !== null && diff.length > 0
-  const blind = hasDiff ? '' : '（diff 不可见）'
-  const prompt = color(`⚠ 允许执行 ${input.toolName}？${why}${blind}`, theme.warning)
+  const blind = hasDiff ? '' : tr('（diff 不可见）')
+  const prompt = color(`${tr('⚠ 允许执行 ')}${input.toolName}${tr('？')}${why}${blind}`, theme.warning)
   const hints = color(approvalKeyHintLine(input.keyHintSegments ?? DEFAULT_KEY_HINT_SEGMENTS), theme.muted)
   const body: string[] = [prompt]
   if (hasDiff && input.compact !== true) {
@@ -95,11 +96,11 @@ export function formatApprovalCard(input: FormatApprovalCardInput, theme: RivetT
   }
   body.push(hints)
   if (input.feedback === true) {
-    body.push(color('📝 说明拒绝原因（Enter 提交反馈 / Esc 返回选项）', theme.muted))
+    body.push(color(tr('📝 说明拒绝原因（Enter 提交反馈 / Esc 返回选项）'), theme.muted))
   }
   return formatRailsBlock(
     input.columns,
-    `审批 · ${input.toolName}`,
+    `${tr('审批 · ')}${input.toolName}`,
     body,
     theme.warning,
   )

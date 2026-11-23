@@ -1,11 +1,3 @@
-/**
- * preset-join — 在 agents.create / resume 的 setup 里加入官方预设面。
- *
- * 不 import dsh-agent-presets：经 reflect.get 读花名册。无服务则跳过
- * （单测 / 未装配宿主）。生产 bundle 会挂上 agent-presets。
- *
- * @module @huiliyi37/dsh-tianshu-tui/adapter/preset-join
- */
 /** 官方 agentPresets 花名册的最小 join 面。 */
 export interface PresetJoinFacet {
     mount(agentCtx: unknown, id?: string): Promise<{

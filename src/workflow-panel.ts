@@ -13,6 +13,7 @@
 
 import { displayWidth } from './width.js'
 
+import { tr } from './i18n/index.js'
 /** run 终态原因（结构兼容 workflow 包 WorkflowStopReason）。 */
 export type WorkflowStopReasonInput = 'completed' | 'cancelled' | 'error'
 
@@ -85,10 +86,10 @@ export interface WorkflowPanelOptions {
 }
 
 /** 面板标题行。 */
-const TITLE = '📜 工作流'
+const TITLE = tr('📜 工作流')
 
 /** 空态占位行。 */
-const EMPTY = '（暂无工作流）'
+const EMPTY = tr('（暂无工作流）')
 
 /** 置灰（细体/暗色）转义序列：cancelled 列表行整行包裹。 */
 const DIM = '\x1B[2m'
@@ -108,16 +109,16 @@ const RUN_GLYPHS: Record<WorkflowStopReasonInput, string> = {
 
 /** 终态原因 → 汇总行文本。 */
 const STOP_TEXTS: Record<WorkflowStopReasonInput, string> = {
-  completed: '已完成',
-  cancelled: '已取消',
-  error: '出错',
+  completed: tr('已完成'),
+  cancelled: tr('已取消'),
+  error: tr('出错'),
 }
 
 /** 结算方式 → roster 行状态文本。 */
 const OUTCOME_TEXTS: Record<WorkflowAgentOutcomeInput, string> = {
-  completed: '已完成',
-  failed: '失败',
-  cancelled: '已取消',
+  completed: tr('已完成'),
+  failed: tr('失败'),
+  cancelled: tr('已取消'),
 }
 
 /**
@@ -153,8 +154,8 @@ function formatElapsed(ms: number): string {
  */
 function projectListRow(view: WorkflowRunView, width: number): string {
   const meta: string[] = []
-  if (view.info.meta.phases !== undefined) meta.push(`${view.info.meta.phases.length} 阶段`)
-  meta.push(`${view.agents.length} 个 agent`)
+  if (view.info.meta.phases !== undefined) meta.push(`${view.info.meta.phases.length}${tr(' 阶段')}`)
+  meta.push(`${view.agents.length}${tr(' 个 agent')}`)
   if (view.elapsedMs !== undefined) meta.push(formatElapsed(view.elapsedMs))
   const row = `${runGlyph(view)} [${view.info.meta.name}] ${view.info.meta.description} · ${meta.join(' · ')}`
   const cut = truncateByWidth(row, width)
@@ -205,7 +206,7 @@ function projectResultRow(view: WorkflowRunView, width: number): string[] {
   const result = view.result
   if (result === undefined) return []
   const errorPart = result.error === undefined ? '' : ` · ${result.error}`
-  return [truncateByWidth(`  └ 终态：${STOP_TEXTS[result.stopReason]}${errorPart} · 启动 ${result.agentsStarted} 个 agent`, width)]
+  return [truncateByWidth(`${tr('  └ 终态：')}${STOP_TEXTS[result.stopReason]}${errorPart}${tr(' · 启动 ')}${result.agentsStarted}${tr(' 个 agent')}`, width)]
 }
 
 /**

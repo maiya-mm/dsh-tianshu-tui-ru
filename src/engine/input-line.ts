@@ -133,6 +133,7 @@ import { ANSI } from './ansi.js'
 import { InsertRemapper } from './insert-remap.js'
 import { VimInput, type VimHost } from './vim-input.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * Grapheme 边界缓存：Intl.Segmenter 对整串分段是 O(n)，而 prevGrapheme/
  * nextGrapheme 在每次光标移动（左右键/backspace/delete）都被调用。长输入下
@@ -380,8 +381,8 @@ function viewportWithCaret(lines: string[], cursorLine: number, maxLines?: numbe
   if (max === 1) return { lines: [cursorText], caretLine: 0 }
   if (max === 2) {
     return cursor < lines.length - 1
-      ? { lines: [cursorText, `… 下 ${lines.length - cursor - 1} 行`], caretLine: 0 }
-      : { lines: [`… 上 ${cursor} 行`, cursorText], caretLine: 1 }
+      ? { lines: [cursorText, `${tr('… 下 ')}${lines.length - cursor - 1}${tr(' 行')}`], caretLine: 0 }
+      : { lines: [`${tr('… 上 ')}${cursor}${tr(' 行')}`, cursorText], caretLine: 1 }
   }
 
   const hasAbove = cursor > 0
@@ -397,9 +398,9 @@ function viewportWithCaret(lines: string[], cursorLine: number, maxLines?: numbe
 
   return {
     lines: [
-      ...(hasAbove ? [`… 上 ${start} 行`] : []),
+      ...(hasAbove ? [`${tr('… 上 ')}${start}${tr(' 行')}`] : []),
       ...visible,
-      ...(hasBelow ? [`… 下 ${lines.length - (start + contentSlots)} 行`] : []),
+      ...(hasBelow ? [`${tr('… 下 ')}${lines.length - (start + contentSlots)}${tr(' 行')}`] : []),
     ],
     caretLine: (hasAbove ? 1 : 0) + (cursor - start),
   }
@@ -732,7 +733,7 @@ export class InputLine {
     if (this._images.length === 0) return []
     // 空行时才提示移除键位：该键位仅在空行生效（非空时 Alt+Backspace 是
     // 词删除），带文本时提示会误导。
-    const hint = this._value.length === 0 ? ' · Alt+⌫ 移除末张' : ''
+    const hint = this._value.length === 0 ? tr(' · Alt+⌫ 移除末张') : ''
     const label = `📎 ${this._images.length} image${this._images.length > 1 ? 's' : ''}${hint}`
     if (!maxWidth || label.length <= maxWidth) return [label]
     return [label.slice(0, maxWidth - 1) + '…']

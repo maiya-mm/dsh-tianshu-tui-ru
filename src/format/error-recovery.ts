@@ -10,6 +10,7 @@
 import { color } from '../engine/ansi.js'
 import type { RivetTheme } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * 识别 agent 错误文本，返回恢复操作指引（echoWarn hint 尾注的数据源）。
  * @param message - 错误全文（大小写不敏感；鉴权/超长/超时三族 + 兜底）。
@@ -17,10 +18,10 @@ import type { RivetTheme } from '../theme.js'
  */
 export function errorRecoveryHint(message: string): string {
   const m = message.toLowerCase()
-  if (m.includes('401') || m.includes('unauthorized') || m.includes('鉴权')) return '/key 重新配置'
-  if (m.includes('context overflow') || m.includes('context length') || m.includes('too long') || m.includes('长度')) return '/compact 压缩上下文'
-  if (m.includes('timeout') || m.includes('timed out') || m.includes('网络') || m.includes('econn')) return '↑ 收回重发'
-  return 'Esc 打断 · ↑ 重发 · /session 换会话'
+  if (m.includes('401') || m.includes('unauthorized') || m.includes('鉴权')) return tr('/key 重新配置')
+  if (m.includes('context overflow') || m.includes('context length') || m.includes('too long') || m.includes('长度')) return tr('/compact 压缩上下文')
+  if (m.includes('timeout') || m.includes('timed out') || m.includes('网络') || m.includes('econn')) return tr('↑ 收回重发')
+  return tr('Esc 打断 · ↑ 重发 · /session 换会话')
 }
 
 /**

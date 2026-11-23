@@ -25,7 +25,7 @@ export interface PaletteEntry {
 /** 分组渲染顺序（稳定排序；表外组名追加到尾部）。 */
 export declare const PALETTE_GROUP_ORDER: readonly string[];
 /** 未分组条目（外部插件命令等）的兜底组名。 */
-export declare const PALETTE_FALLBACK_GROUP = "\u5176\u4ED6";
+export declare const PALETTE_FALLBACK_GROUP: string;
 /** 面板状态：开合 + 查询串 + 选中下标（指向过滤后列表）。 */
 export interface PaletteState {
     open: boolean;

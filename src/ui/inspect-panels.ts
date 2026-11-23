@@ -7,6 +7,7 @@
 
 import { displayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 export type InspectPanel = 'config' | 'skills' | 'status' | 'lsp' | 'tasks'
 
 export interface InspectPanelFlags {
@@ -58,7 +59,7 @@ export function inspectKeyAction(input: {
 
 /** 检查面板底栏；窄宽截断。 */
 export function inspectHint(width: number, extras: readonly string[] = []): string {
-  const text = [...extras, 'Esc 关闭'].join(' · ')
+  const text = [...extras, tr('Esc 关闭')].join(' · ')
   if (width <= 1) return '…'
   let out = ''
   let w = 0

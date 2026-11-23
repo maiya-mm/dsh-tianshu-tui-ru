@@ -6,6 +6,7 @@
  * 两边各写各的字符串会在文案调整时静默失联——pager 的展开入口消失而没有任何报错，
  * 所以放在这里共享。
  */
+import { tr } from './i18n/index.js'
 
 /**
  * 折叠 N 行的提示：`… +25 行`（纯计数，不带展开快捷键——ctrl+o 已被占用且无消费端）。
@@ -13,7 +14,7 @@
  * @param unit - 计数单位（缺省「行」；diff 场景可传「行 diff」等）。
  * @returns 截断计数提示行。
  */
-export function truncationHint(omitted: number, unit = '行'): string {
+export function truncationHint(omitted: number, unit = tr('行')): string {
   return `… +${omitted} ${unit}`
 }
 

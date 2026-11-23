@@ -15,7 +15,7 @@
  */
 import type { RivetTheme } from '../theme.js';
 /** 回填告知行（dim；commit 由装配方着色上下文决定）。 */
-export declare const REFILL_NOTE = "\u21A9 \u4E0A\u4E00\u6761\u6D88\u606F\u53EF\u80FD\u672A\u88AB\u5B8C\u6574\u5904\u7406\u2014\u2014\u5DF2\u56DE\u586B\u8F93\u5165\u6846\uFF0C\u7F16\u8F91\u540E\u56DE\u8F66\u91CD\u53D1";
+export declare const REFILL_NOTE: string;
 export interface ErrorAnnouncerDeps {
     /** 主题（announce 时取，避免构造期依赖未就绪的实例字段）。 */
     getTheme: () => RivetTheme;

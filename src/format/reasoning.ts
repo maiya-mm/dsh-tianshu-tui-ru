@@ -14,6 +14,7 @@ import { wrapToDisplayWidth } from '../width.js'
 import { formatElapsed } from './tool-meta.js'
 import { shimmerHighlight, shimmerLine } from './shimmer.js'
 
+import { tr } from '../i18n/index.js'
 /** live 推理尾巴显示行数下限（流式期只看得到最近的思路）。 */
 export const REASONING_TAIL_LINES = 3
 
@@ -36,9 +37,9 @@ const HEADER_GLYPH = '✻'
 
 /** 头行文本（无色）：`✻ 思考中… (3.2s)` / `✻ 思考 (3.2s) · 12 行`。 */
 function headerText(active: boolean, elapsedMs: number | undefined, lineCount?: number): string {
-  const label = active ? '思考中…' : '思考'
+  const label = active ? tr('思考中…') : tr('思考')
   const elapsed = elapsedMs === undefined ? '' : ` (${formatElapsed(elapsedMs)})`
-  const lines = lineCount === undefined ? '' : ` · ${lineCount} 行`
+  const lines = lineCount === undefined ? '' : ` · ${lineCount}${tr(' 行')}`
   return `${HEADER_GLYPH} ${label}${elapsed}${lines}`
 }
 

@@ -16,6 +16,7 @@ import type { OverlayKeyResult } from './engine/overlay-engine.js'
 import type { RivetTheme } from './theme.js'
 import { displayWidth } from './width.js'
 
+import { tr } from './i18n/index.js'
 /** 选择器条目：展示标签 + 提交值 + 当前值标记。 */
 export interface PickerItem {
   /** 展示标签（列表行原文，窄宽截断）。 */
@@ -159,7 +160,7 @@ export function renderPicker(
 ): string[] {
   const lines: string[] = [color(state.title, theme.brandColor, { bold: true })]
   if (items.length === 0) {
-    lines.push(color('（无选项）', theme.muted))
+    lines.push(color(tr('（无选项）'), theme.muted))
   } else {
     const bodyHeight = Math.max(1, height - 2)
     const sel = Math.max(0, Math.min(state.selected, items.length - 1))
@@ -181,8 +182,8 @@ export function renderPicker(
     }
   }
   const footer = opts?.saveDefault === true
-    ? '↑↓ 选择 · Enter 应用（本会话） · S 设为默认 · Esc 关闭'
-    : '↑↓ 选择 · Enter 确认 · Esc 关闭'
+    ? tr('↑↓ 选择 · Enter 应用（本会话） · S 设为默认 · Esc 关闭')
+    : tr('↑↓ 选择 · Enter 确认 · Esc 关闭')
   lines.push(color(footer, theme.muted))
   return lines
 }

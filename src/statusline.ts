@@ -144,6 +144,7 @@ import type { SessionEvent, SessionId } from '@deepseek-ai/dsh-session'
 import type {} from '@deepseek-ai/dsh-user-approval'
 import type {} from '@deepseek-ai/dsh-permission-presets'
 
+import { tr } from './i18n/index.js'
 /** 六阶段工作流：理解 → 调研 → 拆解 → 实施 → 验证 → 收尾。 */
 export type WorkflowPhase = 'understand' | 'research' | 'decompose' | 'implement' | 'verify' | 'wrapup'
 
@@ -233,12 +234,12 @@ export function applyWorkflowEvent(view: WorkflowView, event: SessionEvent): Wor
 }
 
 const PHASE_LABELS: Record<WorkflowPhase, string> = {
-  understand: '理解',
-  research: '调研',
-  decompose: '拆解',
-  implement: '实施',
-  verify: '验证',
-  wrapup: '收尾',
+  understand: tr('理解'),
+  research: tr('调研'),
+  decompose: tr('拆解'),
+  implement: tr('实施'),
+  verify: tr('验证'),
+  wrapup: tr('收尾'),
 }
 
 /** 授权/模式徽标后缀：[plan…] / [plan] / [auto] / [preset] / [yolo] / [ask]。

@@ -21,7 +21,7 @@
  */
 import type { SessionEvent } from '@deepseek-ai/dsh-session';
 /** 无任何真人聊天记录的会话直接展示的占位标题（状态而非内容）。 */
-export declare const EMPTY_TITLE = "\u65B0\u5BF9\u8BDD";
+export declare const EMPTY_TITLE: string;
 /** fallback 词数上限（与 dsh-base 装配的 session-title config 对齐）。 */
 export declare const FALLBACK_MAX_WORDS = 5;
 /** fallback 字节上限（与 dsh-base 装配的 session-title config 对齐）。 */

@@ -1,14 +1,3 @@
-/**
- * /model 目录校验与一键别名（回流 tianshu 8cc0cbe589）。
- *
- * 分级遵守 llm 目录的 advisory 契约（types.d.ts「catalog membership is
- * advisory, not request validation」——目录缺失不得变成请求拒绝）：
- * - provider 未注册（权威事实，请求注定派发失败）→ 硬拒绝并列已注册路由
- * - 目录非空而模型在目录外 → 硬拒绝 + 至多三条就近建议（不自动纠错）
- * - 目录为空（adapter 未通告/通告失败）无法证伪 → 放行；llm 未装配 → 跳过校验
- *
- * @module @deepseek-ai/dsh-tianshu-tui/commands/model-validate
- */
 /** /model 校验所需的 llm 目录最小服务面（不引入 dsh-llm 依赖；reflect.get 动态获取）。 */
 export interface LlmCatalogFacet {
     listProviders(): Array<{

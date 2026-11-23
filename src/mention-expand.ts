@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { parseMentions } from './mention-parser.js'
 
+import { tr } from './i18n/index.js'
 /** 摘要截断上限：首 20 行 / 4KB（决策 note）。 */
 const MAX_SUMMARY_LINES = 20
 const MAX_SUMMARY_CHARS = 4 * 1024
@@ -37,7 +38,7 @@ function readSummary(path: string): string | null {
   const first = lines.slice(0, MAX_SUMMARY_LINES).join('\n')
   const truncated = first.length > MAX_SUMMARY_CHARS ? first.slice(0, MAX_SUMMARY_CHARS) : first
   const folded = truncated.length < raw.length || lines.length > MAX_SUMMARY_LINES
-  return folded ? `${truncated}\n… [截断 ${lines.length} 行 / ${raw.length} 字符]` : truncated
+  return folded ? `${truncated}${tr('\n… [截断 ')}${lines.length}${tr(' 行 / ')}${raw.length}${tr(' 字符]')}` : truncated
 }
 
 /**

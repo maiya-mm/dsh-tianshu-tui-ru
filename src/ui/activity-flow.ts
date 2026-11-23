@@ -29,6 +29,7 @@ import type {
 } from '../delegation-panel.js'
 import type { WorkflowRunView } from '../workflow-panel.js'
 
+import { tr } from '../i18n/index.js'
 export { childStateFromEntries, mergeDelegationProjections } from '../render/live-panels.js'
 
 /** 委派快照切片（identities/timings 旁路 + 外部 run / now）。 */
@@ -297,7 +298,7 @@ export function formatWorkflowSummary(view: WorkflowRunView, theme: RivetTheme):
     ? `[${view.info.meta.name}]`
     : `[${view.info.meta.name}] ${view.info.meta.description}`
   const elapsed = view.elapsedMs === undefined ? '' : ` · ${formatElapsedHuman(view.elapsedMs)}`
-  return `${color(mark, markColor)}${color(` ${description} · ${view.agents.length} 个 agent${elapsed}`, theme.muted)}`
+  return `${color(mark, markColor)}${color(` ${description} · ${view.agents.length}${tr(' 个 agent')}${elapsed}`, theme.muted)}`
 }
 
 /** 可选 activeExternalRuns；缺失或抛错 → 空数组。 */

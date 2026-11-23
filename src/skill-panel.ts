@@ -22,6 +22,7 @@
 
 import { displayWidth } from './width.js'
 
+import { tr } from './i18n/index.js'
 /** 调用控制（结构兼容 dsh-skill 的 SkillInvocationPolicy）。 */
 export interface SkillInvocationInput {
   /** 模型面是否可调用。 */
@@ -55,20 +56,20 @@ export interface SkillPanelOptions {
 }
 
 /** 面板标题行。 */
-const TITLE = '🧭 技能'
+const TITLE = tr('🧭 技能')
 
 /** 空态占位行。 */
-const EMPTY = '（暂无技能）'
+const EMPTY = tr('（暂无技能）')
 
 /** 已知 SkillSource → 短标签；未知来源回退渲染原值。 */
 const SOURCE_LABELS: Record<string, string> = {
-  'project-dsh': '项目 .dsh',
-  'project-agents': '项目 AGENTS',
-  runtime: '运行时',
-  'user-dsh': '用户 .dsh',
-  'user-agents': '用户 AGENTS',
-  custom: '自定义',
-  bundled: '内置',
+  'project-dsh': tr('项目 .dsh'),
+  'project-agents': tr('项目 AGENTS'),
+  runtime: tr('运行时'),
+  'user-dsh': tr('用户 .dsh'),
+  'user-agents': tr('用户 AGENTS'),
+  custom: tr('自定义'),
+  bundled: tr('内置'),
 }
 
 /**
@@ -111,10 +112,10 @@ function projectDetailRow(skill: SkillSummaryInput): string {
 /** 调用形态文本：由 modelInvocable/userInvocable 组合推导；双不可调也渲染不吞。 */
 function invocationText(invocation: SkillInvocationInput): string {
   const { modelInvocable, userInvocable } = invocation
-  if (modelInvocable && userInvocable) return '模型+用户可调'
-  if (modelInvocable) return '仅模型可调'
-  if (userInvocable) return '仅用户可调'
-  return '不可调'
+  if (modelInvocable && userInvocable) return tr('模型+用户可调')
+  if (modelInvocable) return tr('仅模型可调')
+  if (userInvocable) return tr('仅用户可调')
+  return tr('不可调')
 }
 
 /** 按显示宽度截断字符串（仅发生截断时尾部补 …；极端窄宽退化为 …）。 */

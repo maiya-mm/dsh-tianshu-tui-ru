@@ -25,9 +25,9 @@ export interface ActivityLabelInput {
   ascii?: boolean
 }
 
-const THINKING_VERBS = ['思考中', '推理中', '推演中', '权衡中', '校准中', '收敛中']
-const TOOL_RESULT_VERBS = ['已收到结果', '结果已就绪', '正在消化', '记录结果']
-const TEXT_VERBS = ['写作中', '润色中', '整理中', '落笔中', '打磨中', '成稿中']
+const THINKING_VERBS = [tr('思考中'), tr('推理中'), tr('推演中'), tr('权衡中'), tr('校准中'), tr('收敛中')]
+const TOOL_RESULT_VERBS = [tr('已收到结果'), tr('结果已就绪'), tr('正在消化'), tr('记录结果')]
+const TEXT_VERBS = [tr('写作中'), tr('润色中'), tr('整理中'), tr('落笔中'), tr('打磨中'), tr('成稿中')]
 
 const DETAIL_LIMIT = 40
 

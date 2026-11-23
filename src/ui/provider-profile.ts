@@ -1,5 +1,6 @@
 import { deriveKeyRef } from './key-wizard.js'
 
+import { tr } from '../i18n/index.js'
 export const PI_AI_PROTOCOLS = ['openai-completions', 'openai-responses', 'anthropic-messages'] as const
 
 export type ProviderProfile = Record<string, unknown>
@@ -126,21 +127,21 @@ function validateModels(models: readonly ProviderModel[]): string | undefined {
   const seen = new Set<string>()
   for (const [index, model] of models.entries()) {
     const id = typeof model.id === 'string' ? model.id.trim() : ''
-    if (id.length === 0) return `模型 ${index + 1} 缺少 id`
-    if (seen.has(id)) return `模型 ${index + 1} 的 id 重复：${id}`
+    if (id.length === 0) return `${tr('模型 ')}${index + 1}${tr(' 缺少 id')}`
+    if (seen.has(id)) return `${tr('模型 ')}${index + 1}${tr(' 的 id 重复：')}${id}`
     seen.add(id)
     if (model.name !== undefined && (typeof model.name !== 'string' || model.name.length === 0)) {
-      return `模型 ${index + 1} 的 name 无效`
+      return `${tr('模型 ')}${index + 1}${tr(' 的 name 无效')}`
     }
     for (const key of ['contextWindow', 'maxTokens']) {
       const value = model[key]
       if (value !== undefined && (typeof value !== 'number' || !Number.isInteger(value) || value <= 0)) {
-        return `模型 ${index + 1} 的 ${key} 必须是正整数`
+        return `${tr('模型 ')}${index + 1}${tr(' 的 ')}${key}${tr(' 必须是正整数')}`
       }
     }
     if (model.input !== undefined && (!Array.isArray(model.input)
       || model.input.some(value => value !== 'text' && value !== 'image'))) {
-      return `模型 ${index + 1} 的 input 只能包含 text/image`
+      return `${tr('模型 ')}${index + 1}${tr(' 的 input 只能包含 text/image')}`
     }
   }
   return undefined
@@ -148,23 +149,23 @@ function validateModels(models: readonly ProviderModel[]): string | undefined {
 
 export function validateProviderDraft(draft: ProviderDraft, mode: 'create' | 'edit'): string | undefined {
   if (mode === 'create' && !ROUTE_PATTERN.test(draft.route)) {
-    return 'Route 需以小写字母开头，只含小写字母、数字和单连字符分段'
+    return tr('Route 需以小写字母开头，只含小写字母、数字和单连字符分段')
   }
   const profile = normalizedProviderProfile(draft)
   const baseURL = providerString(profile, 'baseURL')
-  if (mode === 'create' && baseURL === undefined) return '必须填写 baseURL'
-  if (baseURL !== undefined && !validProviderBaseURL(baseURL)) return 'baseURL 必须是有效的 http/https URL'
+  if (mode === 'create' && baseURL === undefined) return tr('必须填写 baseURL')
+  if (baseURL !== undefined && !validProviderBaseURL(baseURL)) return tr('baseURL 必须是有效的 http/https URL')
   const api = providerString(profile, 'api')
-  if (mode === 'create' && api === undefined) return '必须选择 wire protocol'
+  if (mode === 'create' && api === undefined) return tr('必须选择 wire protocol')
   if (api !== undefined && !PI_AI_PROTOCOLS.includes(api as typeof PI_AI_PROTOCOLS[number])) {
-    return `不支持的 wire protocol：${api}`
+    return `${tr('不支持的 wire protocol：')}${api}`
   }
-  if (mode === 'create' && draft.models.length === 0) return '至少添加一个模型'
+  if (mode === 'create' && draft.models.length === 0) return tr('至少添加一个模型')
   if (mode === 'create' || draft.modelsOverridden) {
     const failure = validateModels(draft.models)
     if (failure !== undefined) return failure
   }
-  return apiKeyFailure(draft) === undefined ? undefined : 'API Key 格式无效'
+  return apiKeyFailure(draft) === undefined ? undefined : tr('API Key 格式无效')
 }
 
 export function providerPathOps(

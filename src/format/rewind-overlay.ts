@@ -18,6 +18,7 @@ import { truncateToDisplayWidth } from '../width.js'
 import { formatElapsedHuman } from './spinner-status.js'
 import type { TranscriptMessage } from '../adapter/transcript.js'
 
+import { tr } from '../i18n/index.js'
 /** rewind 可回退的消息最小形状（transcript.view.messages 满足它）。 */
 export interface RewindableMessage {
   readonly seq: number
@@ -47,9 +48,9 @@ export interface RewindResult {
 export type RewindExecutor = (mode: RewindMode, atSeq: number) => Promise<RewindResult>
 
 const MODE_LABELS: Record<RewindMode, string> = {
-  convo: '只截断会话（保留文件）',
-  code: '只回退文件（保留会话）',
-  both: '会话 + 文件都回退',
+  convo: tr('只截断会话（保留文件）'),
+  code: tr('只回退文件（保留会话）'),
+  both: tr('会话 + 文件都回退'),
 }
 
 const MODE_KEYS: ReadonlyArray<{ key: string; mode: RewindMode }> = [
@@ -186,7 +187,7 @@ export class RewindOverlay implements OverlayRenderer {
   render(width: number, height: number): string[] {
     if (this.phase === null) return []
     const theme = this.theme
-    const title = color('⟲ rewind 回退', theme.secondary)
+    const title = color(tr('⟲ rewind 回退'), theme.secondary)
     const contentWidth = Math.max(1, width - 2)
     const bodyBudget = Math.max(0, height - 2)
 
@@ -209,7 +210,7 @@ export class RewindOverlay implements OverlayRenderer {
         const mark = m.kind === 'user' ? '❯' : '✦'
         const age = formatElapsedHuman(Date.now() - m.time)
         const line = truncateToDisplayWidth(
-          `${mark} ${age} 前 ${m.text.replace(/\n/g, ' ')}`,
+          `${mark} ${age}${tr(' 前 ')}${m.text.replace(/\n/g, ' ')}`,
           contentWidth - 2,
         )
         body.push(isSel ? color(`▸ ${line}`, theme.success) : `  ${color(line, theme.dim)}`)
@@ -218,41 +219,41 @@ export class RewindOverlay implements OverlayRenderer {
       return [
         title,
         ...body.slice(start, start + bodyBudget),
-        color('↑↓/j k 选检查点 · Enter 选粒度 · Esc 取消', theme.muted),
+        color(tr('↑↓/j k 选检查点 · Enter 选粒度 · Esc 取消'), theme.muted),
       ]
     }
 
     if (this.phase === 'mode') {
       const body = [
-        color(`回退到 seq ${this.selectedSeq()}，选择粒度：`, theme.primary),
+        color(`${tr('回退到 seq ')}${this.selectedSeq()}${tr('，选择粒度：')}`, theme.primary),
         ...MODE_KEYS.map(({ key, mode }) => `  ${key}. ${MODE_LABELS[mode]}`),
       ]
       return [
         title,
         ...body.slice(0, bodyBudget),
-        color('1/2/3 确认 · Esc 返回列表或取消', theme.muted),
+        color(tr('1/2/3 确认 · Esc 返回列表或取消'), theme.muted),
       ]
     }
 
     if (this.phase === 'executing') {
-      return [title, color('回退执行中…', theme.muted)]
+      return [title, color(tr('回退执行中…'), theme.muted)]
     }
 
     // done
     const r = this.result
-    const hint = color('任意键关闭', theme.muted)
+    const hint = color(tr('任意键关闭'), theme.muted)
     if (r === null) {
-      return [title, color('回退已取消', theme.muted), hint]
+      return [title, color(tr('回退已取消'), theme.muted), hint]
     }
     if (r.filesChanged < 0) {
-      return [title, color(`回退失败：${r.error ?? '未知错误'}`, theme.error), hint]
+      return [title, color(`${tr('回退失败：')}${r.error ?? tr('未知错误')}`, theme.error), hint]
     }
     const skippedNote = r.filesSkipped !== undefined && r.filesSkipped > 0
-      ? `（${r.filesSkipped} 个文件因快照缺失未回退）`
+      ? `${tr('（')}${r.filesSkipped}${tr(' 个文件因快照缺失未回退）')}`
       : ''
     return [
       title,
-      color(`回退完成：${r.filesChanged} 个文件${skippedNote}${r.truncatedTo === undefined ? '' : `，会话截断到 seq ${r.truncatedTo}`}`, theme.success),
+      color(`${tr('回退完成：')}${r.filesChanged}${tr(' 个文件')}${skippedNote}${r.truncatedTo === undefined ? '' : `${tr('，会话截断到 seq ')}${r.truncatedTo}`}`, theme.success),
       hint,
     ]
   }

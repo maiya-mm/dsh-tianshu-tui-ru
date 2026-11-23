@@ -22,6 +22,7 @@ import {
 import { buildProviderItems, resolveKeyRef, type WizardProviderEntry } from './key-wizard.js'
 import type { ProviderFlow } from './provider-flow.js'
 
+import { tr } from '../i18n/index.js'
 /** ctx.reflect 的最小面（结构兼容 cordis reflect；key-flow 只消费 get）。 */
 export interface KeyFlowReflect {
   get(name: string, optional?: boolean): unknown
@@ -120,9 +121,9 @@ export class KeyFlow {
     const createItem = '\0create-pi-ai'
     const items = buildProviderItems(presentation, configured, defaultProvider)
     if (providerFlow !== undefined && directory.some(entry => entry.settingsNs === 'llm-pi-ai')) {
-      items.push({ label: '＋ 新增自定义 pi-ai 供应商…', value: createItem })
+      items.push({ label: tr('＋ 新增自定义 pi-ai 供应商…'), value: createItem })
     }
-    const title = providerFlow === undefined ? '选择供应商（配置 API 密钥）' : '选择供应商（API 密钥 / 自定义接入）'
+    const title = providerFlow === undefined ? tr('选择供应商（配置 API 密钥）') : tr('选择供应商（API 密钥 / 自定义接入）')
     picker.open(title, items, (item) => {
       const entry = directory.find(candidate => candidate.provider === item.value)
       if (entry === undefined) {

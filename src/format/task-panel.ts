@@ -11,6 +11,7 @@
 
 import { truncateToLiveWidth } from './live-card.js'
 
+import { tr } from '../i18n/index.js'
 /** 任务条目（与 session-projection 任务单元的 wire 形状一致）。 */
 export interface TaskItem {
   content: string
@@ -18,7 +19,7 @@ export interface TaskItem {
 }
 
 /** 面板标题行。 */
-const TITLE = '📋 任务'
+const TITLE = tr('📋 任务')
 
 /** 状态 → 标记符号。 */
 function statusMark(status: TaskItem['status']): string {
@@ -37,7 +38,7 @@ export function projectTaskPanel(tasks: TaskItem[] | null, width: number): strin
   if (tasks === null) return []
   const rows = [TITLE]
   if (tasks.length === 0) {
-    rows.push('（无任务）')
+    rows.push(tr('（无任务）'))
     return rows
   }
   for (const task of tasks) {

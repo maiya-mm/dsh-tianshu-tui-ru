@@ -189,13 +189,13 @@ export class ProviderEditorController implements OverlayRenderer {
   private discoveryRequest(): ProviderDiscoveryRequest | { error: string } {
     const draft = this.draft
     const session = this.session
-    if (draft === null || session === null) return { error: '编辑器未打开' }
+    if (draft === null || session === null) return { error: tr('编辑器未打开') }
     const keyFailure = apiKeyFailure(draft)
-    if (keyFailure !== undefined) return { error: keyFailure === 'blank' ? 'API Key 只有空白字符' : 'API Key 含非法字符或包裹格式' }
+    if (keyFailure !== undefined) return { error: keyFailure === 'blank' ? tr('API Key 只有空白字符') : tr('API Key 含非法字符或包裹格式') }
     const profile = normalizedProviderProfile(draft)
     const baseURL = providerString(profile, 'baseURL') ?? session.defaultBaseURL
-    if (baseURL === undefined) return { error: '发现模型前必须填写 baseURL' }
-    if (!validProviderBaseURL(baseURL)) return { error: 'baseURL 必须是有效的 http/https URL' }
+    if (baseURL === undefined) return { error: tr('发现模型前必须填写 baseURL') }
+    if (!validProviderBaseURL(baseURL)) return { error: tr('baseURL 必须是有效的 http/https URL') }
     const api = providerString(profile, 'api')
     const apiKey = normalizedApiKey(draft)
     return {
@@ -225,7 +225,7 @@ export class ProviderEditorController implements OverlayRenderer {
       if (!this.openFlag || generation !== this.generation) return
       if (models.length === 0) {
         this.phase = 'editing'
-        this.error = '端点未返回可用模型，可继续手输'
+        this.error = tr('端点未返回可用模型，可继续手输')
       } else {
         const known = new Set((this.draft?.models ?? []).map(model => typeof model.id === 'string' ? model.id.trim() : ''))
         this.candidates = models
@@ -251,12 +251,12 @@ export class ProviderEditorController implements OverlayRenderer {
     const retrying = this.phase === 'key-retry'
     if (retrying && normalizedApiKey(draft).length === 0) {
       this.phase = 'key-retry'
-      this.error = '重试 API Key 时必须输入非空 key'
+      this.error = tr('重试 API Key 时必须输入非空 key')
       return
     }
     if (session.mode === 'create' && session.taken.includes(draft.route)) {
       this.phase = retrying ? 'key-retry' : 'editing'
-      this.error = `Route 已存在：${draft.route}`
+      this.error = `${tr('Route 已存在：')}${draft.route}`
       return
     }
     const failure = validateProviderDraft(draft, session.mode)
@@ -422,7 +422,7 @@ export class ProviderEditorController implements OverlayRenderer {
 
   private renderCandidates(width: number, height: number): string[] {
     const theme = this.getTheme()
-    const lines = [color('选择要加入草稿的模型', theme.brandColor, { bold: true }), '']
+    const lines = [color(tr('选择要加入草稿的模型'), theme.brandColor, { bold: true }), '']
     const bodyHeight = Math.max(1, height - 5)
     const start = Math.max(0, Math.min(this.candidateIndex - bodyHeight + 1, this.candidates.length - bodyHeight))
     for (const [offset, model] of this.candidates.slice(start, start + bodyHeight).entries()) {
@@ -430,7 +430,7 @@ export class ProviderEditorController implements OverlayRenderer {
       lines.push(color(`${index === this.candidateIndex ? '▶' : ' '} [${this.picked.has(model.id) ? 'x' : ' '}] ${model.id}`, index === this.candidateIndex ? theme.primary : theme.dim))
     }
     lines.push('')
-    lines.push(color('↑↓ 选择 · Space 切换 · A 全选/清空 · Enter 采纳 · Esc 取消', theme.muted))
+    lines.push(color(tr('↑↓ 选择 · Space 切换 · A 全选/清空 · Enter 采纳 · Esc 取消'), theme.muted))
     return this.withNotice(lines.map(line => truncateToDisplayWidth(line, width)))
   }
 
@@ -440,14 +440,14 @@ export class ProviderEditorController implements OverlayRenderer {
     const draft = this.draft
     const session = this.session
     if (draft === null || session === null) {
-      return this.withNotice([color('供应商设置不可用', theme.warning), '', color(this.error ?? '缺少 settings 服务', theme.error), '', color('Enter / Esc 关闭', theme.muted)]
+      return this.withNotice([color(tr('供应商设置不可用'), theme.warning), '', color(this.error ?? tr('缺少 settings 服务'), theme.error), '', color(tr('Enter / Esc 关闭'), theme.muted)]
         .map(line => truncateToDisplayWidth(line, width)))
     }
     const lines = [color(session.title, theme.brandColor, { bold: true })]
     if (session.mode === 'edit') lines.push(color(`Route: ${draft.route}`, theme.muted))
-    if (this.phase === 'key-retry') lines.push(color('Profile 已保存；仅重试 API Key，不会重复写 profile。', theme.warning))
+    if (this.phase === 'key-retry') lines.push(color(tr('Profile 已保存；仅重试 API Key，不会重复写 profile。'), theme.warning))
     if (this.phase === 'saved') {
-      lines.push('', color('✓ 已保存；新路由可在 /model 中选择。', theme.success), '', color('Enter / Esc 关闭', theme.muted))
+      lines.push('', color(tr('✓ 已保存；新路由可在 /model 中选择。'), theme.success), '', color(tr('Enter / Esc 关闭'), theme.muted))
       return this.withNotice(lines.map(line => truncateToDisplayWidth(line, width)))
     }
     lines.push('')
@@ -459,28 +459,28 @@ export class ProviderEditorController implements OverlayRenderer {
     if (session.mode === 'create' || draft.declared) {
       lines.push(this.field('Protocol', providerString(draft.profile, 'api') ?? PI_AI_PROTOCOLS[0], 'api', ''))
     }
-    lines.push(this.field('Models', `${draft.models.length} ${tr(draft.modelsOverridden ? '项（自定义）' : '项（继承）')}`, 'models'))
+    lines.push(this.field('Models', `${draft.models.length} ${tr(draft.modelsOverridden ? tr('项（自定义）') : tr('项（继承）'))}`, 'models'))
     const modelLimit = Math.max(1, Math.min(5, height - lines.length - 7))
     const modelStart = Math.max(0, Math.min(this.modelIndex - modelLimit + 1, draft.models.length - modelLimit))
     for (const [offset, model] of draft.models.slice(modelStart, modelStart + modelLimit).entries()) {
       const index = modelStart + offset
-      const id = typeof model.id === 'string' && model.id.length > 0 ? model.id : '<未填写>'
+      const id = typeof model.id === 'string' && model.id.length > 0 ? model.id : tr('<未填写>')
       lines.push(color(`  ${this.focus === 'models' && index === this.modelIndex ? '▶' : '·'} ${id}`, this.focus === 'models' && index === this.modelIndex ? theme.primary : theme.dim))
     }
-    lines.push(this.field('API Key（可选）', maskKeyInput(draft.keyDraft), 'key'))
+    lines.push(this.field(tr('API Key（可选）'), maskKeyInput(draft.keyDraft), 'key'))
     if (this.phase !== 'key-retry') {
-      lines.push(this.field('[发现模型]', '', 'discover'))
-      lines.push(this.field('[保存]', '', 'save'))
+      lines.push(this.field(tr('[发现模型]'), '', 'discover'))
+      lines.push(this.field(tr('[保存]'), '', 'save'))
     }
-    if (this.phase === 'discovering') lines.push(color('正在发现模型… Esc 取消', theme.muted))
-    if (this.phase === 'saving') lines.push(color('正在保存 profile / API Key…', theme.muted))
+    if (this.phase === 'discovering') lines.push(color(tr('正在发现模型… Esc 取消'), theme.muted))
+    if (this.phase === 'saving') lines.push(color(tr('正在保存 profile / API Key…'), theme.muted))
     if (this.error !== null) lines.push(color(`✗ ${this.error}`, theme.error))
     lines.push('')
     const footer = this.phase === 'key-retry'
-      ? '输入新 Key · Enter 仅重试 Key · Esc 关闭（profile 已保存）'
+      ? tr('输入新 Key · Enter 仅重试 Key · Esc 关闭（profile 已保存）')
       : this.focus === 'models'
-        ? '↑↓ 字段 · ←→ 模型 · Enter 编辑 id · A 添加 · D 删除 · F 发现 · Esc 取消'
-        : '↑↓ 字段 · Enter 下一项/确认 · ←→ 协议/模型 · Esc 取消'
+        ? tr('↑↓ 字段 · ←→ 模型 · Enter 编辑 id · A 添加 · D 删除 · F 发现 · Esc 取消')
+        : tr('↑↓ 字段 · Enter 下一项/确认 · ←→ 协议/模型 · Esc 取消')
     lines.push(color(footer, theme.muted))
     return this.withNotice(lines.map(line => truncateToDisplayWidth(line, width)))
   }

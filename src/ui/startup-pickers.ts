@@ -9,6 +9,7 @@ import { PickerController, type PickerItem } from '../picker.js'
 import { echoSavedDefault, echoSessionOnly } from '../startup-defaults.js'
 import { getActiveThemeName, listCustomThemes, setTheme, THEME_NAMES } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 export interface OverlayActivate {
   activate(id: string): void
   deactivate(): void
@@ -54,7 +55,7 @@ export async function openModelPicker(host: ModelPickerHost): Promise<void> {
   const { overlay, picker } = host
   if (overlay === null || picker === null) return
   if (host.llm === undefined) {
-    host.echoWarn('⚠ llm 服务不可用（未装配 llm 插件），模型选择器不可用', '/key 配置')
+    host.echoWarn(tr('⚠ llm 服务不可用（未装配 llm 插件），模型选择器不可用'), tr('/key 配置'))
     return
   }
   const currentKey = host.current === undefined ? null : `${host.current.provider}/${host.current.model}`
@@ -66,7 +67,7 @@ export async function openModelPicker(host: ModelPickerHost): Promise<void> {
     for (const model of models) {
       const key = `${provider.id}/${model.id}`
       const item: PickerItem = {
-        label: key === currentKey ? `${key}（当前）` : key,
+        label: key === currentKey ? `${key}${tr('（当前）')}` : key,
         value: key,
         current: key === currentKey,
         isDefault: key === savedKey,
@@ -76,7 +77,7 @@ export async function openModelPicker(host: ModelPickerHost): Promise<void> {
     }
   }
   if (items.length === 0) {
-    host.echoWarn('⚠ 无可用模型（llm 目录为空），模型选择器不可用', '/key 配置')
+    host.echoWarn(tr('⚠ 无可用模型（llm 目录为空），模型选择器不可用'), tr('/key 配置'))
     return
   }
   const apply = (item: PickerItem, persist: boolean): void => {
@@ -86,10 +87,10 @@ export async function openModelPicker(host: ModelPickerHost): Promise<void> {
     const hot = host.applySession(selection)
     const label = `${selection.provider}/${selection.model}`
     host.commit(persist
-      ? (hot ? echoSavedDefault('model', label) : `${echoSavedDefault('model', label)}（当前会话不可热切）`)
-      : (hot ? echoSessionOnly('model', label) : `模型已切换: ${label}（当前会话不可热切）。选择器按 S 或 /model default 可设为启动默认`))
+      ? (hot ? echoSavedDefault('model', label) : `${echoSavedDefault('model', label)}${tr('（当前会话不可热切）')}`)
+      : (hot ? echoSessionOnly('model', label) : `${tr('模型已切换: ')}${label}${tr('（当前会话不可热切）。选择器按 S 或 /model default 可设为启动默认')}`))
   }
-  picker.open('选择模型', items, (item) => { apply(item, false) }, selectedIndex, {
+  picker.open(tr('选择模型'), items, (item) => { apply(item, false) }, selectedIndex, {
     onSaveDefault: (item) => { apply(item, true) },
   })
   overlay.activate('picker')
@@ -102,7 +103,7 @@ export function openThemePicker(host: ThemePickerHost): void {
   const prev = getActiveThemeName()
   const allNames = [...THEME_NAMES, ...listCustomThemes().map(n => `custom:${n}`)]
   const items: PickerItem[] = allNames.map(name => ({
-    label: name === prev ? `${name}（当前）` : name,
+    label: name === prev ? `${name}${tr('（当前）')}` : name,
     value: name,
     current: name === prev,
     isDefault: name === host.savedTheme,
@@ -116,7 +117,7 @@ export function openThemePicker(host: ThemePickerHost): void {
     host.commit(persist ? echoSavedDefault('theme', name) : echoSessionOnly('theme', name))
     host.flushLiveRender()
   }
-  picker.open('选择主题', items, (item) => { finish(item.value, false) }, selectedIndex, {
+  picker.open(tr('选择主题'), items, (item) => { finish(item.value, false) }, selectedIndex, {
     onPreview: (item) => { setTheme(item.value) },
     onCancel: () => { setTheme(prev) },
     onSaveDefault: (item) => { finish(item.value, true) },
@@ -133,13 +134,13 @@ export function openEffortPicker(host: EffortPickerHost): void {
   const current = host.currentEffort ?? 'auto'
   const saved = host.savedEffort ?? 'auto'
   const items: PickerItem[] = EFFORT_ITEMS.map(level => ({
-    label: level === current ? `${level}（当前）` : level,
+    label: level === current ? `${level}${tr('（当前）')}` : level,
     value: level,
     current: level === current,
     isDefault: level === saved,
   }))
   const selectedIndex = Math.max(0, EFFORT_ITEMS.indexOf(current as typeof EFFORT_ITEMS[number]))
-  picker.open('选择推理等级', items, (item) => { host.apply(item.value, false) }, selectedIndex, {
+  picker.open(tr('选择推理等级'), items, (item) => { host.apply(item.value, false) }, selectedIndex, {
     onSaveDefault: (item) => { host.apply(item.value, true) },
   })
   overlay.activate('picker')

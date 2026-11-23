@@ -16,6 +16,7 @@
  *
  * @module @deepseek-ai/dsh-tianshu-tui/i18n/ru
  */
+import { RU_EXTRA } from './ru/extra.js'
 
 /** zh 源串 → ru 译文（缺 key → 渲染层回落源串）。 */
 export const RU: Readonly<Record<string, string>> = {
@@ -364,4 +365,5 @@ export const RU: Readonly<Record<string, string>> = {
   '选择供应商（配置 API 密钥）': 'Выбор провайдера (настроить API-ключ)',
   '标准': 'Стандарт',
   '标准模式': 'Стандартный режим',
+  ...RU_EXTRA,
 }

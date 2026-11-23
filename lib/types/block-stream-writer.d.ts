@@ -1,7 +1,3 @@
-/**
- * 分块策略参数：minChars 起切下限、maxChars 强制切分上限、
- * idleMs 静默冲刷延时、maxBufferSize 缓冲硬上限（超出立即强切）。
- */
 export interface BlockStreamConfig {
     minChars: number;
     maxChars: number;

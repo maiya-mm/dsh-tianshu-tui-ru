@@ -21,6 +21,7 @@ import type {
   KeyBinding,
 } from './types.js'
 
+import { tr } from '../i18n/index.js'
 /** 双击 Esc 触发 rewind 的确认窗口（ms；对齐 Claude Code Esc+Esc 时间回溯）。 */
 export const REWIND_DOUBLE_ESC_MS = 1000
 
@@ -69,7 +70,7 @@ export function validateActionConflicts(actions: readonly KeyAction[]): void {
       if (a.when !== undefined || b.when !== undefined) continue
       const overlap = a.keys.some(ka => b.keys.some(kb => bindingsOverlap(ka, kb)))
       if (overlap) {
-        throw new Error(`action 键位冲突: ${a.id} 与 ${b.id}（同域同键且均无 when 守卫）`)
+        throw new Error(`${tr('action 键位冲突: ')}${a.id}${tr(' 与 ')}${b.id}${tr('（同域同键且均无 when 守卫）')}`)
       }
     }
   }
@@ -102,7 +103,7 @@ export class ActionRegistry {
    */
   register(action: KeyAction): void {
     if (this.actions.some(a => a.id === action.id)) {
-      throw new Error(`action id 重复: ${action.id}`)
+      throw new Error(`${tr('action id 重复: ')}${action.id}`)
     }
     validateActionConflicts([...this.actions, action])
     this.actions.push(action)

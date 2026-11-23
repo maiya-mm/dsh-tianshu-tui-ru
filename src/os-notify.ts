@@ -10,6 +10,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 
+import { tr } from './i18n/index.js'
 const execFileAsync = promisify(execFile)
 
 /** 设为 1/true 时关闭系统通知。 */
@@ -118,11 +119,11 @@ export function applyNotifyOsPref(
   env: NodeJS.ProcessEnv = process.env,
 ): { echo?: string; warn?: string } {
   if (notifyOsEnvLocked(env)) {
-    return { warn: '⚠ 系统通知已被 DSH_TUI_SKIP_NOTIFY 关闭' }
+    return { warn: tr('⚠ 系统通知已被 DSH_TUI_SKIP_NOTIFY 关闭') }
   }
   const next = action === 'toggle' ? prefs.notifyOs === false : action === 'on'
   prefs.notifyOs = next
-  return { echo: `系统通知已${next ? '开' : '关'}` }
+  return { echo: `${tr('系统通知已')}${next ? tr('开') : tr('关')}` }
 }
 
 /** 面板终端段：锁定时显示关。 */

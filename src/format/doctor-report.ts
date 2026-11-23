@@ -9,6 +9,7 @@ import { detectHyperlinkSupport, detectImageProtocol } from '../engine/ansi.js'
 import { isLegacyWindowsConsole } from '../term-caps.js'
 import type { RivetTheme } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 /** 单条诊断检查结果。 */
 export interface DoctorCheck {
   name: string
@@ -39,31 +40,31 @@ export function collectDoctorReport(
   env: NodeJS.ProcessEnv = process.env,
 ): DoctorCheck[] {
   const checks: DoctorCheck[] = [
-    { name: '终端尺寸', status: 'ok', value: `${cols}×${rows}` },
-    { name: '终端背景', status: 'ok', value: background },
+    { name: tr('终端尺寸'), status: 'ok', value: `${cols}×${rows}` },
+    { name: tr('终端背景'), status: 'ok', value: background },
   ]
 
   // 超链接支持
   const hyperlink = detectHyperlinkSupport(env)
-  checks.push({ name: '超链接', status: hyperlink ? 'ok' : 'warn', value: hyperlink ? '✓' : '不支持' })
+  checks.push({ name: tr('超链接'), status: hyperlink ? 'ok' : 'warn', value: hyperlink ? '✓' : tr('不支持') })
 
   // 图片协议
   const imageProtocol = detectImageProtocol(env)
-  checks.push({ name: '图片协议', status: imageProtocol !== 'none' ? 'ok' : 'info', value: imageProtocol })
+  checks.push({ name: tr('图片协议'), status: imageProtocol !== 'none' ? 'ok' : 'info', value: imageProtocol })
 
   // 遗留终端
   const legacy = isLegacyWindowsConsole(env)
-  checks.push({ name: '终端兼容', status: legacy ? 'warn' : 'ok', value: legacy ? '遗留模式（功能受限）' : '现代终端' })
+  checks.push({ name: tr('终端兼容'), status: legacy ? 'warn' : 'ok', value: legacy ? tr('遗留模式（功能受限）') : tr('现代终端') })
 
   // True Color（chalk.level: 0=none,1=16,2=256,3=16m）
   const tcLevel = (globalThis as Record<string, unknown>).chalkLevel as number | undefined ?? 3
-  checks.push({ name: 'True Color', status: tcLevel >= 3 ? 'ok' : 'warn', value: tcLevel >= 3 ? '✓ 16M 色' : `仅 ${tcLevel === 2 ? '256 色' : '16 色'}` })
+  checks.push({ name: 'True Color', status: tcLevel >= 3 ? 'ok' : 'warn', value: tcLevel >= 3 ? tr('✓ 16M 色') : `${tr('仅 ')}${tcLevel === 2 ? tr('256 色') : tr('16 色')}` })
 
   // tmux 剪贴板
   const inTmux = Boolean(env.TMUX)
   checks.push({
-    name: '剪贴板', status: inTmux ? 'warn' : 'ok',
-    value: inTmux ? 'tmux 内（需 set-clipboard on）' : '直接终端',
+    name: tr('剪贴板'), status: inTmux ? 'warn' : 'ok',
+    value: inTmux ? tr('tmux 内（需 set-clipboard on）') : tr('直接终端'),
     ...(inTmux ? { fixId: 1 } : {}),
   })
 
@@ -72,8 +73,8 @@ export function collectDoctorReport(
   const isKitty = term.includes('kitty')
   if (isKitty && imageProtocol === 'none') {
     checks.push({
-      name: 'kitty 图片', status: 'warn',
-      value: 'dcs-passthrough 未开启',
+      name: tr('kitty 图片'), status: 'warn',
+      value: tr('dcs-passthrough 未开启'),
       fixId: 2,
     })
   }
@@ -85,13 +86,13 @@ export function collectDoctorReport(
 export const DOCTOR_FIXES: DoctorFix[] = [
   {
     id: 1,
-    title: 'tmux 剪贴板配置',
-    guidance: "echo 'set-option -s set-clipboard on' >> ~/.tmux.conf  # 允许 tmux 使用系统剪贴板",
+    title: tr('tmux 剪贴板配置'),
+    guidance: tr("echo 'set-option -s set-clipboard on' >> ~/.tmux.conf  # 允许 tmux 使用系统剪贴板"),
   },
   {
     id: 2,
     title: 'kitty dcs-passthrough',
-    guidance: "echo 'term_features all' >> ~/.config/kitty/kitty.conf  # 启用 DCS 透传（图片协议需要）",
+    guidance: tr("echo 'term_features all' >> ~/.config/kitty/kitty.conf  # 启用 DCS 透传（图片协议需要）"),
   },
 ]
 
@@ -103,7 +104,7 @@ export const DOCTOR_FIXES: DoctorFix[] = [
  */
 export function renderDoctorReport(checks: DoctorCheck[], theme: RivetTheme): string[] {
   const lines: string[] = []
-  lines.push(color('终端诊断报告:', theme.brandColor))
+  lines.push(color(tr('终端诊断报告:'), theme.brandColor))
 
   for (const check of checks) {
     const icon = check.status === 'ok'
@@ -111,7 +112,7 @@ export function renderDoctorReport(checks: DoctorCheck[], theme: RivetTheme): st
       : check.status === 'warn'
         ? color(' ⚠ ', theme.secondary)
         : color(' ℹ ', theme.muted)
-    const fixTag = check.fixId !== undefined ? color(` [修复 ${check.fixId}]`, theme.muted) : ''
+    const fixTag = check.fixId !== undefined ? color(`${tr(' [修复 ')}${check.fixId}]`, theme.muted) : ''
     lines.push(`${icon}${check.name}: ${color(check.value, theme.muted)}${fixTag}`)
   }
 
@@ -119,14 +120,14 @@ export function renderDoctorReport(checks: DoctorCheck[], theme: RivetTheme): st
   const fixable = checks.filter(c => c.fixId !== undefined)
   if (fixable.length > 0) {
     lines.push('')
-    lines.push(color('可修复项:', theme.brandColor))
+    lines.push(color(tr('可修复项:'), theme.brandColor))
     for (const check of fixable) {
       const fix = DOCTOR_FIXES.find(f => f.id === check.fixId)
       if (fix !== undefined) {
         lines.push(`  [${fix.id}] ${fix.title}`)
       }
     }
-    lines.push(color('运行 /doctor fix <id> 查看修复指引', theme.muted))
+    lines.push(color(tr('运行 /doctor fix <id> 查看修复指引'), theme.muted))
   }
 
   return lines

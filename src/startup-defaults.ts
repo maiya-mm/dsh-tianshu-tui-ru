@@ -6,6 +6,7 @@
  *
  * @module @huiliyi37/dsh-tianshu-tui/startup-defaults
  */
+import { tr } from './i18n/index.js'
 
 /** 启动项种类（回显与 /xxx default 提示共用）。 */
 export type StartupKind = 'theme' | 'model' | 'effort' | 'density' | 'preset' | 'vim'
@@ -31,29 +32,29 @@ const SESSION_HINT: Record<StartupKind, string> = {
 }
 
 const SESSION_VERB: Record<StartupKind, (value: string) => string> = {
-  theme: value => `主题已切换: ${value}`,
-  model: value => `模型已切换: ${value}`,
-  effort: value => `推理等级已设为 ${value}`,
-  density: value => `已切换为${value}`,
-  preset: value => `已切换为 ${value}`,
-  vim: value => `vim 键位已${value === 'off' ? '关闭' : '开启'}: ${value}`,
+  theme: value => `${tr('主题已切换: ')}${value}`,
+  model: value => `${tr('模型已切换: ')}${value}`,
+  effort: value => `${tr('推理等级已设为 ')}${value}`,
+  density: value => `${tr('已切换为')}${value}`,
+  preset: value => `${tr('已切换为 ')}${value}`,
+  vim: value => `${tr('vim 键位已')}${value === 'off' ? tr('关闭') : tr('开启')}: ${value}`,
 }
 
 const DEFAULT_LABEL: Record<StartupKind, string> = {
-  theme: '主题',
-  model: '模型',
-  effort: '推理等级',
-  density: '密度',
-  preset: '预设',
-  vim: 'vim 键位',
+  theme: tr('主题'),
+  model: tr('模型'),
+  effort: tr('推理等级'),
+  density: tr('密度'),
+  preset: tr('预设'),
+  vim: tr('vim 键位'),
 }
 
 /** 仅本会话回显：点名本会话 + 如何写默认。 */
 export function echoSessionOnly(kind: StartupKind, value: string): string {
   const hint = kind === 'density' || kind === 'preset'
     ? SESSION_HINT[kind]
-    : `选择器按 S 或 ${SESSION_HINT[kind]}`
-  return `${SESSION_VERB[kind](value)}（仅本会话）。${hint} 可设为启动默认`
+    : `${tr('选择器按 S 或 ')}${SESSION_HINT[kind]}`
+  return `${SESSION_VERB[kind](value)}${tr('（仅本会话）。')}${hint}${tr(' 可设为启动默认')}`
 }
 
 /** /effort 选择：auto 清除 reasoningEffort。 */
@@ -68,6 +69,6 @@ export function effortSelection(
 
 /** 写启动默认回显：主题说重启，其余说新会话。 */
 export function echoSavedDefault(kind: StartupKind, value: string): string {
-  const when = kind === 'theme' || kind === 'density' || kind === 'vim' ? '重启后仍生效' : '新会话起始生效'
-  return `已设为默认${DEFAULT_LABEL[kind]}：${value}（${when}）`
+  const when = kind === 'theme' || kind === 'density' || kind === 'vim' ? tr('重启后仍生效') : tr('新会话起始生效')
+  return `${tr('已设为默认')}${DEFAULT_LABEL[kind]}${tr('：')}${value}${tr('（')}${when}${tr('）')}`
 }

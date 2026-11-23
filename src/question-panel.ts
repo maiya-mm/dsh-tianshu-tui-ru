@@ -25,6 +25,7 @@ import { displayWidth } from './width.js'
 import { color } from './engine/ansi.js'
 import type { RivetTheme } from './theme.js'
 
+import { tr } from './i18n/index.js'
 /** 单个可选项（结构兼容 user-questions 的 AskUserQuestionOption）。 */
 export interface QuestionOptionInput {
   /** 用户可见标签。 */
@@ -94,7 +95,7 @@ interface QuestionGlyphs {
 }
 
 const UNICODE_GLYPHS = {
-  title: '❓ 提问',
+  title: tr('❓ 提问'),
   question: '❓',
   plan: '🧭',
   approve: '✓',
@@ -103,7 +104,7 @@ const UNICODE_GLYPHS = {
 } as const satisfies QuestionGlyphs
 
 const ASCII_GLYPHS = {
-  title: '? 提问',
+  title: tr('? 提问'),
   question: '?',
   plan: '>',
   approve: '+',
@@ -117,7 +118,7 @@ function questionGlyphs(): QuestionGlyphs {
 }
 
 /** 多选标记（尾缀在通用问题行）。 */
-const MULTI_MARK = '（多选）'
+const MULTI_MARK = tr('（多选）')
 
 /** 粗体（与 engine/ansi.ts 的 ANSI.BOLD 一致；纯函数层不跨模块依赖）。 */
 const BOLD = '\x1B[1m'
@@ -214,7 +215,7 @@ function projectPlanKeyHints(item: QuestionItemInput, width: number): string[] {
   if (keepIdx !== undefined && keepIdx >= 0) {
     hints.push(`[${keepIdx + 1}] ${item.options?.[keepIdx]?.label ?? ''}`)
   }
-  hints.push('[f] 反馈修改', '[Esc]/[Ctrl+C] 取消')
+  hints.push(tr('[f] 反馈修改'), tr('[Esc]/[Ctrl+C] 取消'))
   return [truncateByWidth(`  ${hints.join('  ')}`, width)]
 }
 

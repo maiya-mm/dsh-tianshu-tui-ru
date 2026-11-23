@@ -30,6 +30,7 @@ import {
 import { THEME_PALETTES } from './theme-palettes.js'
 import { validateThemeContrast } from './theme-contrast.js'
 
+import { tr } from './i18n/index.js'
 /** 默认自定义主题根目录（`~/.dsh-tui`；源 `rivetHome()` 为天枢路径，移植时改为本包路径）。 */
 function defaultThemesRoot(): string {
   return join(homedir(), '.dsh-tui')
@@ -152,7 +153,7 @@ export function loadCustomThemes(baseDir?: string, onWarning?: (message: string)
 export function exportCurrentTheme(nameArg?: string, baseDir?: string): string {
   const active = getActiveThemeName()
   const name = (nameArg ?? `exported-${active.replace(/^custom:/, '')}`).replace(/[^A-Za-z0-9_-]/g, '-')
-  if (name === '') return '导出失败：主题名净化后为空'
+  if (name === '') return tr('导出失败：主题名净化后为空')
   const theme = getTheme()
   const template = {
     base: Object.hasOwn(THEME_PALETTES, active) ? active : (getActiveThemeBackground() === 'light' ? 'paper' : 'graphite'),
@@ -181,10 +182,10 @@ export function exportCurrentTheme(nameArg?: string, baseDir?: string): string {
     mkdirSync(dir, { recursive: true })
     writeFileSync(file, `${JSON.stringify(template, null, 2)}\n`)
   } catch (err) {
-    return `导出失败：${err instanceof Error ? err.message : String(err)}`
+    return `${tr('导出失败：')}${err instanceof Error ? err.message : String(err)}`
   }
   // 就地注册（不重启可用）；注册失败只影响当场切换，不影响已写盘的模板。
   const parsed = parseCustomThemeJson(JSON.stringify(template))
   if (parsed) registerCustomTheme(name, parsed)
-  return `主题模板已导出: ${file}（可用 /theme custom:${name}；编辑文件后重启生效）`
+  return `${tr('主题模板已导出: ')}${file}${tr('（可用 /theme custom:')}${name}${tr('；编辑文件后重启生效）')}`
 }

@@ -22,6 +22,7 @@ import {
 import { ANSI } from '../engine/ansi.js'
 import { highlightQuery, isSmartCaseSensitive } from './highlight.js'
 
+import { tr } from '../i18n/index.js'
 /** handleKey 结果：close = 请求关闭 overlay；handled = 已消费（统一词表 OverlayKeyResult）。 */
 export type PagerKeyResult = OverlayKeyResult
 
@@ -181,7 +182,7 @@ export class ScrollPagerOverlay implements OverlayRenderer {
     this.clampScroll()
     const rows: string[] = []
     const counter = this.matches.length > 0 ? `  ${this.current + 1}/${this.matches.length}` : ''
-    const queryText = this.query === '' ? '搜索或滚动（Esc 退出）' : this.query
+    const queryText = this.query === '' ? tr('搜索或滚动（Esc 退出）') : this.query
     const position = `${this.scrollRow + 1}-${Math.min(this.rows.length, this.scrollRow + this.bodyHeight)}/${this.rows.length}`
     rows.push(color(`/scroll ${queryText}${this.query === '' ? '' : '▌'}${counter}  ↕${position}`, theme.secondary))
     const currentMatch = this.matches.length > 0 ? this.matches[this.current] : undefined
@@ -201,7 +202,7 @@ export class ScrollPagerOverlay implements OverlayRenderer {
       }
       rows.push(isCurrent ? color(`▸ ${text}`, theme.success) : `  ${text}`)
     }
-    rows.push(color('↑↓/PgUp/PgDn 滚动 · n/N 匹配跳转 · g/G 首尾 · Esc 退出', theme.muted))
+    rows.push(color(tr('↑↓/PgUp/PgDn 滚动 · n/N 匹配跳转 · g/G 首尾 · Esc 退出'), theme.muted))
     return rows
   }
 

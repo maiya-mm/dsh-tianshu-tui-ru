@@ -9,6 +9,7 @@ import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { foldMessageContent } from '../adapter/assistant-stream.js'
 
+import { tr } from '../i18n/index.js'
 /** 导出元信息（头块）。 */
 export interface SessionExportMeta {
   /** 会话 id。 */
@@ -23,7 +24,7 @@ const TOOL_RESULT_CAP = 5000
 /** 截断超长文本（保留头部 + 尾部 + 标记）。 */
 function truncate(text: string, cap: number): string {
   if (text.length <= cap) return text
-  return `${text.slice(0, cap)}\n…+${text.length - cap} 字符`
+  return `${text.slice(0, cap)}\n…+${text.length - cap}${tr(' 字符')}`
 }
 
 /** 渲染一条工具结果消息（0.2.0 起 ToolResultMessage 的 content 即平铺内容块）。 */
@@ -44,7 +45,7 @@ function renderToolResult(message: Message): string {
 export function renderSessionExport(events: readonly SessionEvent[], meta: SessionExportMeta): string {
   const lines: string[] = []
   lines.push(`# Session export — ${meta.sessionId}`)
-  if (meta.cwd !== undefined && meta.cwd !== '') lines.push(`工作区: ${meta.cwd}`)
+  if (meta.cwd !== undefined && meta.cwd !== '') lines.push(`${tr('工作区: ')}${meta.cwd}`)
   lines.push('')
 
   let count = 0
@@ -53,7 +54,7 @@ export function renderSessionExport(events: readonly SessionEvent[], meta: Sessi
       case 'user/message': {
         const { text } = foldMessageContent(event.data.content)
         if (text !== '') {
-          lines.push('## 用户', '', text, '')
+          lines.push(tr('## 用户'), '', text, '')
           count++
         }
         break
@@ -65,9 +66,9 @@ export function renderSessionExport(events: readonly SessionEvent[], meta: Sessi
           .map(block => `${block.name}(${block.arguments})`)
         if (text === '' && reasoning === '' && toolCalls.length === 0) break
         lines.push('## Assistant', '')
-        if (reasoning !== '') lines.push(`> 推理: ${reasoning}`, '')
+        if (reasoning !== '') lines.push(`${tr('> 推理: ')}${reasoning}`, '')
         if (text !== '') lines.push(text, '')
-        for (const call of toolCalls) lines.push(`工具调用: \`${call}\``)
+        for (const call of toolCalls) lines.push(`${tr('工具调用: `')}${call}\``)
         lines.push('')
         count++
         break
@@ -75,7 +76,7 @@ export function renderSessionExport(events: readonly SessionEvent[], meta: Sessi
       case 'tool/result': {
         const text = renderToolResult(event.data.message)
         if (text !== '') {
-          lines.push('## 工具结果', '', text, '')
+          lines.push(tr('## 工具结果'), '', text, '')
           count++
         }
         break
@@ -85,6 +86,6 @@ export function renderSessionExport(events: readonly SessionEvent[], meta: Sessi
     }
   }
 
-  if (count === 0) lines.push('（无消息）')
+  if (count === 0) lines.push(tr('（无消息）'))
   return lines.join('\n')
 }

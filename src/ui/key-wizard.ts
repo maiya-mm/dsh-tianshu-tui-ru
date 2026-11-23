@@ -9,6 +9,7 @@
 
 import type { PickerItem } from '../picker.js'
 
+import { tr } from '../i18n/index.js'
 /** 可配置供应商目录条目（llm seam 的最小形状；装配方经 reflect.get 现取）。 */
 export interface WizardProviderEntry {
   /** 供应商路由 id。 */
@@ -110,7 +111,7 @@ export function buildProviderItems(
     const current = entry.provider === defaultProvider
     if (entry.provider === 'deepseek-account') {
       items.push({
-        label: `${entry.displayName}（已登录，无需 API Key）${current ? ' ●' : ''}`,
+        label: `${entry.displayName}${tr('（已登录，无需 API Key）')}${current ? ' ●' : ''}`,
         value: entry.provider,
         header: true,
         ...current ? { current: true } : {},

@@ -13,6 +13,7 @@ import {
   type ProviderSettingsOp,
 } from './provider-profile.js'
 
+import { tr } from '../i18n/index.js'
 export interface ProviderFlowReflect {
   get(name: string, optional?: boolean): unknown
 }
@@ -120,16 +121,16 @@ export class ProviderFlow {
   async openCreate(): Promise<void> {
     const prepared = this.namespace('llm-pi-ai')
     if (prepared === undefined) {
-      this.unavailable('当前部署的 llm-pi-ai settings 不可用或只读，无法新建供应商。')
+      this.unavailable(tr('当前部署的 llm-pi-ai settings 不可用或只读，无法新建供应商。'))
       return
     }
     const taken = this.takenRoutes(prepared.descriptor)
     if (taken === undefined) {
-      this.unavailable('无法读取供应商目录；为避免覆盖已有 profile，已停止新建。')
+      this.unavailable(tr('无法读取供应商目录；为避免覆盖已有 profile，已停止新建。'))
       return
     }
     const opened = this.openSession('llm-pi-ai', [], prepared, undefined, new Set(taken))
-    if (!opened) this.unavailable('供应商编辑器未装配。')
+    if (!opened) this.unavailable(tr('供应商编辑器未装配。'))
   }
 
   async openEdit(entry: WizardProviderEntry): Promise<boolean> {
@@ -165,22 +166,22 @@ export class ProviderFlow {
     const save: ProviderEditorSession['save'] = async draft => {
       const key = normalizedApiKey(draft)
       if (mode === 'create' && taken.has(draft.route)) {
-        return { kind: 'profile-error', message: `Route 已存在，未覆盖原 profile：${draft.route}` }
+        return { kind: 'profile-error', message: `${tr('Route 已存在，未覆盖原 profile：')}${draft.route}` }
       }
       if (profileCommitted && key.length === 0) {
-        return { kind: 'key-error', message: 'Profile 已保存；重试 API Key 时仍需输入非空 key。' }
+        return { kind: 'key-error', message: tr('Profile 已保存；重试 API Key 时仍需输入非空 key。') }
       }
       const credentials = this.deps.reflect.get('credentials', false) as ProviderCredentialsFacet | null | undefined
       const keyRef = mode === 'create' ? resolveKeyRef(draft.route, undefined) : initialKeyRef
       if (!profileCommitted) {
         if (key.length > 0) {
           if (credentials === undefined || credentials === null || typeof credentials.set !== 'function') {
-            return { kind: 'profile-error', message: '当前部署无凭据存储；请留空 API Key 或配置 credentials 服务。' }
+            return { kind: 'profile-error', message: tr('当前部署无凭据存储；请留空 API Key 或配置 credentials 服务。') }
           }
           try {
             const info = await credentials.describe(keyRef)
             if (info.writable === false) {
-              return { kind: 'profile-error', message: `进程环境已提供 ${keyRef}，文件写入不会生效。` }
+              return { kind: 'profile-error', message: `${tr('进程环境已提供 ')}${keyRef}${tr('，文件写入不会生效。')}` }
             }
           } catch {
             // Match KeyDialog: an incompatible describe facet defers the real failure to set.
@@ -201,7 +202,7 @@ export class ProviderFlow {
       }
       if (key.length > 0) {
         try {
-          if (credentials === undefined || credentials === null) return { kind: 'key-error', message: 'Profile 已保存，但凭据服务不可用。' }
+          if (credentials === undefined || credentials === null) return { kind: 'key-error', message: tr('Profile 已保存，但凭据服务不可用。') }
           await credentials.set(keyRef, key)
         } catch (error) {
           return { kind: 'key-error', message: message(error) }
@@ -212,7 +213,7 @@ export class ProviderFlow {
     }
     const session: ProviderEditorSession = {
       mode,
-      title: mode === 'create' ? '新增自定义 pi-ai 供应商' : `编辑 ${entry?.displayName ?? route}`,
+      title: mode === 'create' ? tr('新增自定义 pi-ai 供应商') : `${tr('编辑 ')}${entry?.displayName ?? route}`,
       draft: {
         route,
         declared: mode === 'create' || entry?.declared === true,
@@ -226,7 +227,7 @@ export class ProviderFlow {
       discover: async (request, signal) => {
         const llm = this.deps.reflect.get('llm', false) as ProviderLlmFacet | undefined
         if (llm === undefined || typeof llm.discoverModels !== 'function') {
-          throw new Error('当前部署不支持模型发现，可继续手输模型。')
+          throw new Error(tr('当前部署不支持模型发现，可继续手输模型。'))
         }
         return llm.discoverModels(settingsNs, request, signal)
       },

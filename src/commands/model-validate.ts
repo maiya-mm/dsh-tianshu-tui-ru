@@ -9,6 +9,7 @@
  *
  * @module @deepseek-ai/dsh-tianshu-tui/commands/model-validate
  */
+import { tr } from '../i18n/index.js'
 
 /** /model 校验所需的 llm 目录最小服务面（不引入 dsh-llm 依赖；reflect.get 动态获取）。 */
 export interface LlmCatalogFacet {
@@ -62,17 +63,17 @@ export async function validateModelSelection(
   if (llm === undefined) return null
   const providers = llm.listProviders().map(provider => provider.id)
   if (!providers.includes(next.provider)) {
-    return `⚠ 未知 provider: ${next.provider}（已注册: ${providers.join(' / ') || '无'}）`
-      + `——未切换，当前仍是 ${current.provider}/${current.model}`
+    return `${tr('⚠ 未知 provider: ')}${next.provider}${tr('（已注册: ')}${providers.join(' / ') || tr('无')}${tr('）')}`
+      + `${tr('——未切换，当前仍是 ')}${current.provider}/${current.model}`
   }
   const catalog = await llm.listModels(next.provider).catch(() => [])
   if (catalog.length > 0 && !catalog.some(model => model.id === next.model)) {
     const suggestions = suggestModels(next.model, catalog.map(model => model.id))
     const hint = suggestions.length > 0
-      ? `（你是否想用 ${suggestions.map(id => `${next.provider}/${id}`).join(' / ')}？）`
-      : `（可用 ${catalog.length} 个，/model 无参打开选择器）`
-    return `⚠ ${next.provider} 没有模型 ${next.model}${hint}`
-      + `——未切换，当前仍是 ${current.provider}/${current.model}`
+      ? `${tr('（你是否想用 ')}${suggestions.map(id => `${next.provider}/${id}`).join(' / ')}${tr('？）')}`
+      : `${tr('（可用 ')}${catalog.length}${tr(' 个，/model 无参打开选择器）')}`
+    return `⚠ ${next.provider}${tr(' 没有模型 ')}${next.model}${hint}`
+      + `${tr('——未切换，当前仍是 ')}${current.provider}/${current.model}`
   }
   return null
 }

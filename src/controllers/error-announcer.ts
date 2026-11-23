@@ -17,8 +17,9 @@
 import { errorRecoveryHint, formatWarnWithHint } from '../format/error-recovery.js'
 import type { RivetTheme } from '../theme.js'
 
+import { tr } from '../i18n/index.js'
 /** 回填告知行（dim；commit 由装配方着色上下文决定）。 */
-export const REFILL_NOTE = '↩ 上一条消息可能未被完整处理——已回填输入框，编辑后回车重发'
+export const REFILL_NOTE = tr('↩ 上一条消息可能未被完整处理——已回填输入框，编辑后回车重发')
 
 export interface ErrorAnnouncerDeps {
   /** 主题（announce 时取，避免构造期依赖未就绪的实例字段）。 */
@@ -62,9 +63,9 @@ export class ErrorAnnouncer {
     text: string,
     errorMessage: string,
     inputEmpty: boolean,
-    label = '消息发送失败',
+    label = tr('消息发送失败'),
   ): void {
-    const hint = inputEmpty ? '已回填输入框，编辑后回车重发' : '↑ 从历史取回后重发'
+    const hint = inputEmpty ? tr('已回填输入框，编辑后回车重发') : tr('↑ 从历史取回后重发')
     this.deps.commit(formatWarnWithHint(`⚠ ${label}: ${errorMessage}`, hint, this.deps.getTheme()))
     if (inputEmpty) {
       if (this.lastSubmitted === text) this.lastSubmitted = null

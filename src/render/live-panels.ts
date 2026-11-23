@@ -37,6 +37,7 @@ import { projectLspPanel, groupLspDiagnostics } from '../format/lsp-diagnostics.
 import { formatLiveCard, liveCardGlyph, type LiveCardStatus } from '../format/live-card.js'
 import { formatActivityBand } from '../format/activity-band.js'
 
+import { tr } from '../i18n/index.js'
 /** 后台任务快照 → 活区卡状态形（running ⠋ / completed › / 其余 ✗）。 */
 function taskSnapshotStatus(status: 'running' | 'stopping' | 'completed' | 'killed' | 'failed'): LiveCardStatus {
   if (status === 'running') return 'running'
@@ -140,7 +141,7 @@ export function renderSkillsPanel(snapshot: LiveSnapshot): string[] {
     width: snapshot.cols,
     ...(snapshot.skillSelected === undefined ? {} : { selected: snapshot.skillSelected }),
   })
-  if (snapshot.skillItems.length > 0) rows.push(inspectHint(snapshot.cols, ['↑↓ 详情']))
+  if (snapshot.skillItems.length > 0) rows.push(inspectHint(snapshot.cols, [tr('↑↓ 详情')]))
   else rows.push(inspectHint(snapshot.cols))
   return rows
 }

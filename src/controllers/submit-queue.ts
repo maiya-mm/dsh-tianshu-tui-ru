@@ -17,6 +17,7 @@ import type { AgentControls } from '../adapter/send.js'
 import type { InputLine } from '../engine/input-line.js'
 import { truncateToDisplayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 一条排队中的待发消息。 */
 export interface QueuedSubmit {
   text: string
@@ -67,7 +68,7 @@ export class SubmitQueueController {
 export function formatQueueLine(cols: number, items: readonly QueuedSubmit[]): string {
   const first = items[0]
   const head = first === undefined ? '' : ` · ${first.text.replace(/\s+/g, ' ')}`
-  return truncateToDisplayWidth(`⏳ ${items.length} 条排队${head}（↑ 取回）`, Math.max(10, cols - 2))
+  return truncateToDisplayWidth(`⏳ ${items.length}${tr(' 条排队')}${head}${tr('（↑ 取回）')}`, Math.max(10, cols - 2))
 }
 
 /** cancelAndSendInput 的依赖面（装配方闭包注入；本模块不 import app）。 */

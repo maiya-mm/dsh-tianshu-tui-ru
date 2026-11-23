@@ -15,6 +15,7 @@ import { displayWidth } from './width.js'
 import { projectTaskPanel, type TaskItem } from './format/task-panel.js'
 import { formatElapsedHuman } from './format/spinner-status.js'
 
+import { tr } from './i18n/index.js'
 /** goal 投影单元的状态阶段（与 goal 包 wire 形状一致）。 */
 export type GoalPhase = 'active' | 'paused' | 'blocked' | 'complete'
 
@@ -46,20 +47,20 @@ export interface GoalStatusLabel {
 
 /** status_label 映射（参照 grok-build goal_detail：状态 → (文本, 颜色, 阶段)）。 */
 const STATUS_LABELS: Record<GoalPhase, GoalStatusLabel> = {
-  active: { text: '进行中', color: 'green', stage: 'active' },
-  paused: { text: '已暂停', color: 'yellow', stage: 'paused' },
-  blocked: { text: '已阻塞', color: 'red', stage: 'blocked' },
-  complete: { text: '已完成', color: 'blue', stage: 'complete' },
+  active: { text: tr('进行中'), color: 'green', stage: 'active' },
+  paused: { text: tr('已暂停'), color: 'yellow', stage: 'paused' },
+  blocked: { text: tr('已阻塞'), color: 'red', stage: 'blocked' },
+  complete: { text: tr('已完成'), color: 'blue', stage: 'complete' },
 }
 
 /** 目标段标题行。 */
-const GOAL_TITLE = '◆ 目标'
+const GOAL_TITLE = tr('◆ 目标')
 
 /** 计划段徽标前缀。 */
-const PLAN_TITLE = '📐 计划'
+const PLAN_TITLE = tr('📐 计划')
 
 /** 会话汇总段标题行（summary-state 投影：TUI 本地 fold，不经宿主投影总线）。 */
-const SESSION_TITLE = 'Σ 会话'
+const SESSION_TITLE = tr('Σ 会话')
 
 /** 会话级汇总段输入（summary-state 模型的展示投影）。 */
 export interface SessionTotalsInput {
@@ -108,7 +109,7 @@ function projectGoalSection(goal: GoalProjectionInput, width: number): string[] 
   const label = goalStatusLabel(goal.goal.phase)
   rows.push(truncateByWidth(`${GOAL_TITLE} · ${label.text}`, width))
   rows.push(truncateByWidth(goal.goal.objective, width))
-  rows.push(truncateByWidth(`↻ 轮次 ${goal.roundsStarted}/${goal.goal.maxGoalRounds}`, width))
+  rows.push(truncateByWidth(`${tr('↻ 轮次 ')}${goal.roundsStarted}/${goal.goal.maxGoalRounds}`, width))
   if (goal.goal.phase === 'blocked' && goal.goal.blockedReason !== undefined) {
     rows.push(truncateByWidth(`🚧 ${goal.goal.blockedReason.message}`, width))
   }
@@ -117,15 +118,15 @@ function projectGoalSection(goal: GoalProjectionInput, width: number): string[] 
 
 /** 计划段：active/pending 徽标单行。 */
 function projectPlanSection(plan: PlanProjectionInput, width: number): string[] {
-  const mode = plan.active ? '进行中' : '关闭'
-  const pending = plan.pending === true ? ' · 待生效' : ''
+  const mode = plan.active ? tr('进行中') : tr('关闭')
+  const pending = plan.pending === true ? tr(' · 待生效') : ''
   return [truncateByWidth(`${PLAN_TITLE} · ${mode}${pending}`, width)]
 }
 
 /** 会话汇总段：`Σ 会话 · 回合 N · 工具 M · 耗时 X` 单行；无已完成轮时不渲染。 */
 function projectSessionSection(totals: SessionTotalsInput | null, width: number): string[] {
   if (totals === null || totals.turns === 0) return []
-  const parts = [`${SESSION_TITLE} · 回合 ${totals.turns}`, `工具 ${totals.toolCalls}`]
+  const parts = [`${SESSION_TITLE}${tr(' · 回合 ')}${totals.turns}`, `${tr('工具 ')}${totals.toolCalls}`]
   if (totals.elapsedMs > 0) parts.push(formatElapsedHuman(totals.elapsedMs))
   return [truncateByWidth(parts.join(' · '), width)]
 }

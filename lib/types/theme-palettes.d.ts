@@ -1,16 +1,3 @@
-/**
- * 主题调色板定义层（语义 token → 具体颜色值）。
- *
- * 每套主题两轨：
- * - `truecolor`: hex 值，level >= 2 时使用（level 2 由 ansi.ts fg() 现场量化为 xterm-256）
- * - `fallback`: chalk 命名色，level <= 1 时使用（由 fg() 映射为基础 16 色 SGR）
- *
- * 元数据：
- * - `background`: 面向暗色还是亮色终端背景 —— auto 主题检测后按此挑选
- * - `description`: /theme picker 的单一事实来源（此前散落在 main.ts）
- *
- * 消费方通过 theme.ts 的 buildTheme/THEMES 获得 RivetTheme，不直接 import 本文件。
- */
 /** 语义 token 集。值是 hex（truecolor 轨）或 chalk 命名色（fallback 轨）。 */
 export interface ColorSet {
     primary: string;

@@ -12,6 +12,7 @@ import type { TokenUsage } from '@deepseek-ai/dsh-llm'
 import { estimateCost } from './pricing.js'
 import { formatTokenCount } from './glance-bar.js'
 
+import { tr } from '../i18n/index.js'
 /** 单模型的累计用量桶(字段兼容 TokenUsage 形状,可直接喂 estimateCost)。 */
 export interface SessionCostBucket {
   /** wire 模型 id(未知时为 'unknown')。 */
@@ -65,9 +66,9 @@ export function accumulateUsage(
  * @returns 报告行数组(纯文本,无 ANSI)。
  */
 export function formatSessionCostReport(buckets: readonly SessionCostBucket[]): string[] {
-  const rows = ['会话成本统计']
+  const rows = [tr('会话成本统计')]
   if (buckets.length === 0) {
-    rows.push('（本会话尚无用量数据）')
+    rows.push(tr('（本会话尚无用量数据）'))
     return rows
   }
   let totalInput = 0
@@ -87,13 +88,13 @@ export function formatSessionCostReport(buckets: readonly SessionCostBucket[]): 
     if (cost !== undefined) totalCost += cost
     const parts = [`· ${bucket.model}`]
     if (bucket.inputTokens > 0 || bucket.cacheReadTokens > 0 || bucket.cacheWriteTokens > 0) {
-      const input = [`输入 ${formatTokenCount(bucket.inputTokens)}`]
-      if (bucket.cacheReadTokens > 0) input.push(`缓存读 ${formatTokenCount(bucket.cacheReadTokens)}`)
-      if (bucket.cacheWriteTokens > 0) input.push(`写 ${formatTokenCount(bucket.cacheWriteTokens)}`)
+      const input = [`${tr('输入 ')}${formatTokenCount(bucket.inputTokens)}`]
+      if (bucket.cacheReadTokens > 0) input.push(`${tr('缓存读 ')}${formatTokenCount(bucket.cacheReadTokens)}`)
+      if (bucket.cacheWriteTokens > 0) input.push(`${tr('写 ')}${formatTokenCount(bucket.cacheWriteTokens)}`)
       parts.push(input.join(' · '))
     }
-    if (bucket.outputTokens > 0) parts.push(`输出 ${formatTokenCount(bucket.outputTokens)}`)
-    if (bucket.reasoningTokens > 0) parts.push(`推理 ${formatTokenCount(bucket.reasoningTokens)}`)
+    if (bucket.outputTokens > 0) parts.push(`${tr('输出 ')}${formatTokenCount(bucket.outputTokens)}`)
+    if (bucket.reasoningTokens > 0) parts.push(`${tr('推理 ')}${formatTokenCount(bucket.reasoningTokens)}`)
     if (cost !== undefined) parts.push(`$${cost}`)
     rows.push(parts.join(' — '))
     totalInput += bucket.inputTokens
@@ -101,10 +102,10 @@ export function formatSessionCostReport(buckets: readonly SessionCostBucket[]): 
     totalCacheWrite += bucket.cacheWriteTokens
     totalOutput += bucket.outputTokens
   }
-  const total: string[] = [`合计:输入 ${formatTokenCount(totalInput)}`]
-  if (totalCacheRead > 0) total.push(`缓存读 ${formatTokenCount(totalCacheRead)}`)
-  if (totalCacheWrite > 0) total.push(`写 ${formatTokenCount(totalCacheWrite)}`)
-  total.push(`输出 ${formatTokenCount(totalOutput)}`)
+  const total: string[] = [`${tr('合计:输入 ')}${formatTokenCount(totalInput)}`]
+  if (totalCacheRead > 0) total.push(`${tr('缓存读 ')}${formatTokenCount(totalCacheRead)}`)
+  if (totalCacheWrite > 0) total.push(`${tr('写 ')}${formatTokenCount(totalCacheWrite)}`)
+  total.push(`${tr('输出 ')}${formatTokenCount(totalOutput)}`)
   if (totalCost > 0) total.push(`$${Math.round(totalCost * 100) / 100}`)
   rows.push(total.join(' · '))
   return rows

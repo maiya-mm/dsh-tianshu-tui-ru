@@ -25,6 +25,7 @@
 
 import type { ToolCallId } from '@deepseek-ai/dsh-llm'
 
+import { tr } from '../i18n/index.js'
 /** 分组折叠的事件最小契约（投影输入；由调用方从 SessionEvent 提取）。
  *  - tool-call：必填 callId/turn/step/name/arguments（与 live.ts 提取一致）。
  *  - tool-result：只按 callId 绑定——turn/step 由所属 entry 决定，乱序到达
@@ -218,9 +219,9 @@ export function toggleGroupExpanded(state: ToolGroupState, key: string): ToolGro
  */
 export function buildToolGroupSummary(group: ToolGroup): string {
   const { total, completed } = groupStats(group)
-  const base = `${total} 个工具并行执行`
+  const base = `${total}${tr(' 个工具并行执行')}`
   if (completed < total) {
-    return completed > 0 ? `${base}中 (${completed}/${total} 完成)` : `${base}中`
+    return completed > 0 ? `${base}${tr('中 (')}${completed}/${total}${tr(' 完成)')}` : `${base}${tr('中')}`
   }
   return base
 }

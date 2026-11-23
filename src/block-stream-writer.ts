@@ -2,6 +2,7 @@
  * 分块策略参数：minChars 起切下限、maxChars 强制切分上限、
  * idleMs 静默冲刷延时、maxBufferSize 缓冲硬上限（超出立即强切）。
  */
+import { tr } from './i18n/index.js'
 export interface BlockStreamConfig {
   minChars: number
   maxChars: number
@@ -17,7 +18,7 @@ const DEFAULT_CONFIG: BlockStreamConfig = {
 }
 
 /** 句末标点（中英文）。拆成数组用 lastIndexOf 逐个定位，避免逐字符 includes 的 O(n²)。 */
-const SENTENCE_ENDS = ['。', '！', '？', '.', '!', '?', '；', ';']
+const SENTENCE_ENDS = [tr('。'), tr('！'), tr('？'), '.', '!', '?', tr('；'), ';']
 
 /**
  * 把流式文本按语义边界（段落 > 句末 > 空白）聚合成块再回调 onBlock：

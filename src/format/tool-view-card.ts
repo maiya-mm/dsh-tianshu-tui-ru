@@ -28,6 +28,7 @@ import {
   toolTitleVerb,
 } from './tool-card.js'
 
+import { tr } from '../i18n/index.js'
 /** diff 上下文行数（与 fs 工具 meta 的逐 hunk 上下文口径一致）。 */
 const DIFF_CONTEXT_LINES = 3
 
@@ -171,7 +172,7 @@ function diffCard(
   }, theme)]
 
   const { adds, dels } = fileDiffStats(view.diffs)
-  const statsLine = color(`${view.diffs.length} 处修改 (+${adds} −${dels})`, theme.muted)
+  const statsLine = color(`${view.diffs.length}${tr(' 处修改 (+')}${adds} −${dels})`, theme.muted)
   if (input.compact === true || (input.expanded !== true && adds + dels > DIFF_FOLD_CHANGES)) {
     lines.push(...indentToolBody([statsLine], '', theme))
     return lines
@@ -184,7 +185,7 @@ function diffCard(
     if (multiPath) body.push(color(diff.path, theme.warning))
     body.push(...renderFileDiff(diff, input.expanded === true ? {} : { maxLines: DIFF_MAX_BODY_LINES }, theme))
   }
-  if (body.length === 0) body.push(color('(无变更)', theme.muted))
+  if (body.length === 0) body.push(color(tr('(无变更)'), theme.muted))
   lines.push(...indentToolBody(body, '', theme))
   return lines
 }
@@ -221,7 +222,7 @@ function terminalCard(
   const output = (view.output ?? input.content).replace(/\n+$/, '')
   const bodyColor = input.isError ? theme.error : theme.muted
   if (!output) {
-    body.push(color('(无输出)', theme.muted))
+    body.push(color(tr('(无输出)'), theme.muted))
   } else {
     const rows = output.split('\n')
     const maxLines = getDefaultMaxLines(input.toolName)

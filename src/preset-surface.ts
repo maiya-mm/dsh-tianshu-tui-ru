@@ -17,6 +17,7 @@
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { foldRequestHeader } from '@deepseek-ai/dsh-session'
 
+import { tr } from './i18n/index.js'
 /**
  * 会话当前 preset id：尾向找最后一个 `agent-preset/selected` 切换值，
  * 无则回落 header 的创建值（官方 resolveSessionPreset 的等价 fold）。
@@ -73,8 +74,8 @@ export function wirePhaseLabel(names: readonly string[] | undefined): string | u
   const set = new Set(names)
   // 锚定面：Minimal/梁神 phase1 的双工具面（持久 shell + str_replace_editor）。
   const shellish = set.has('bash') || set.has('pwsh') || set.has('powershell')
-  if (shellish && set.has('str_replace_editor') && set.size === 2) return '锚定面'
+  if (shellish && set.has('str_replace_editor') && set.size === 2) return tr('锚定面')
   // PTC 面：Code Mode 晋升后 wire 上模型只能直呼 run_code。
-  if (set.has('run_code')) return 'PTC 面'
+  if (set.has('run_code')) return tr('PTC 面')
   return undefined
 }

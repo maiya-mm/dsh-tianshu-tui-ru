@@ -23,8 +23,9 @@
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { fallbackSessionTitle, foldSessionTitle } from '@deepseek-ai/dsh-session-title'
 
+import { tr } from '../i18n/index.js'
 /** 无任何真人聊天记录的会话直接展示的占位标题（状态而非内容）。 */
-export const EMPTY_TITLE = '新对话'
+export const EMPTY_TITLE = tr('新对话')
 /** fallback 词数上限（与 dsh-base 装配的 session-title config 对齐）。 */
 export const FALLBACK_MAX_WORDS = 5
 /** fallback 字节上限（与 dsh-base 装配的 session-title config 对齐）。 */

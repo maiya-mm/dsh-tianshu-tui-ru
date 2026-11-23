@@ -20,6 +20,7 @@ import { truncateToDisplayWidth } from '../width.js'
 import { useAsciiGlyphs } from '../term-caps.js'
 import { DEFAULT_SPINNER_VERBS, verbForElapsed } from '../format/spinner-status.js'
 
+import { tr } from '../i18n/index.js'
 /** 底部 glance 一行数据（纯文本，无 ANSI——着色留在装配层）。 */
 export interface GlanceLine {
   /**
@@ -66,7 +67,7 @@ export function deriveGlanceStatus(statusText: string | null, live: LiveAgentSta
   if (live === undefined || live.live) {
     return live?.status === 'running' ? `● ${verbForElapsed(elapsedMs, DEFAULT_SPINNER_VERBS)}` : null
   }
-  return '✗ 已停止'
+  return tr('✗ 已停止')
 }
 
 /**

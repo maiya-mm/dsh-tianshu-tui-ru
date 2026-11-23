@@ -11,6 +11,7 @@
  *
  * 消费方通过 theme.ts 的 buildTheme/THEMES 获得 RivetTheme，不直接 import 本文件。
  */
+import { tr } from './i18n/index.js'
 
 /** 语义 token 集。值是 hex（truecolor 轨）或 chalk 命名色（fallback 轨）。 */
 export interface ColorSet {
@@ -61,7 +62,7 @@ export interface ThemePaletteDef {
 // ── Pastel — soft, pleasant, 二次元-inspired ──────────────────────
 const PASTEL: ThemePaletteDef = {
   background: 'dark',
-  description: '温和粉彩。二次元风格启发，高对比、低饱和度多色卡。',
+  description: tr('温和粉彩。二次元风格启发，高对比、低饱和度多色卡。'),
   truecolor: {
     primary: '#a8e6cf',   // mint green — search/grep/glob
     secondary: '#d4a5f5', // lavender — edit/write
@@ -86,7 +87,7 @@ const PASTEL: ThemePaletteDef = {
 // saturation, split the greens, lift purple to lavender, rose over pure red).
 const CYBERPUNK: ThemePaletteDef = {
   background: 'dark',
-  description: '赛博朋克。霓虹极高对比，酷炫亮眼。',
+  description: tr('赛博朋克。霓虹极高对比，酷炫亮眼。'),
   truecolor: {
     primary: '#48c6e2',   // cyan-400 — desaturated cyan to avoid rgb halation
     secondary: '#c4a3ff', // lavender — readable violet 9:1
@@ -107,7 +108,7 @@ const CYBERPUNK: ThemePaletteDef = {
 // ── Observatory — 五色星辰（中国传统五色体系）──────────────────────
 const OBSERVATORY: ThemePaletteDef = {
   background: 'dark',
-  description: '五色星辰。传统五行配色体系，天玑星君玄灰底色。',
+  description: tr('五色星辰。传统五行配色体系，天玑星君玄灰底色。'),
   truecolor: {
     primary: '#7c78f2',   // 靛蓝 — 天玑星君主色（原 #4f46e5 暗底仅 3.0:1，提亮至 ≥4.5:1）
     secondary: '#a78bfa', // 星云紫
@@ -128,7 +129,7 @@ const OBSERVATORY: ThemePaletteDef = {
 // ── Midnight — GitHub Dark inspired ───────────────────────────────
 const MIDNIGHT: ThemePaletteDef = {
   background: 'dark',
-  description: 'GitHub 暗黑风格。极简中性灰度，高度清晰。',
+  description: tr('GitHub 暗黑风格。极简中性灰度，高度清晰。'),
   truecolor: {
     primary: '#58a6ff',   // accent blue
     secondary: '#b0b8c4', // medium gray
@@ -151,7 +152,7 @@ const MIDNIGHT: ThemePaletteDef = {
 // ── Starfield — 星空/星座（Rivet 星图美学）─────────────────────────
 const STARFIELD: ThemePaletteDef = {
   background: 'dark',
-  description: '星空星座。Rivet 原生星图美学，天蓝主星与星云紫辅色。',
+  description: tr('星空星座。Rivet 原生星图美学，天蓝主星与星云紫辅色。'),
   truecolor: {
     primary: '#8ab4ff',   // hot blue-white star (Vega/Rigel)
     secondary: '#c9a9ff', // nebula violet
@@ -174,7 +175,7 @@ const STARFIELD: ThemePaletteDef = {
 // ── Tianshu — 玄夜墨色（95% 墨灰 + 星金 accent + 朱砂用户印）────────
 const TIANSHU: ThemePaletteDef = {
   background: 'dark',
-  description: '玄夜墨色。95% 墨灰，配以星金主色与朱砂用户印，沉稳低调。',
+  description: tr('玄夜墨色。95% 墨灰，配以星金主色与朱砂用户印，沉稳低调。'),
   truecolor: {
     primary: '#dfb282',   // 星金 accent
     secondary: '#a49ac7', // 墨紫灰
@@ -205,7 +206,7 @@ const TIANSHU: ThemePaletteDef = {
 // ── Ziwei — 紫微北斗·墨夜 ──────────────────────────────────────────
 const ZIWEI: ThemePaletteDef = {
   background: 'dark',
-  description: '帝星紫微。朱砂红标记点缀帝星紫，富含中国星图古典美学韵味。',
+  description: tr('帝星紫微。朱砂红标记点缀帝星紫，富含中国星图古典美学韵味。'),
   truecolor: {
     primary: '#c9b8ff',     // 紫微 — 帝星紫
     secondary: '#8ab4ff',   // 天枢蓝白
@@ -233,7 +234,7 @@ const ZIWEI: ThemePaletteDef = {
 // ── Claude — Claude Code TUI palette port（RGB 逐值移植）───────────
 const CLAUDE: ThemePaletteDef = {
   background: 'dark',
-  description: 'Claude Code 官方 TUI 经典调色盘移植。橘黄经典。',
+  description: tr('Claude Code 官方 TUI 经典调色盘移植。橘黄经典。'),
   truecolor: {
     primary: '#d77757',   // brand orange rgb(215,119,87)
     secondary: '#af87ff', // autoAccept violet
@@ -258,7 +259,7 @@ const CLAUDE: ThemePaletteDef = {
 // ── Slate — 冷静板岩（专业/不疲劳）────────────────────────────────
 const SLATE: ThemePaletteDef = {
   background: 'dark',
-  description: '冷静板岩灰。单一冷静 Teal 主色，无彩色结构，低眩光长久不累。',
+  description: tr('冷静板岩灰。单一冷静 Teal 主色，无彩色结构，低眩光长久不累。'),
   truecolor: {
     primary: '#56b6c2',   // teal-cyan — 唯一 accent
     secondary: '#7aa2cf', // 钢蓝
@@ -285,7 +286,7 @@ const SLATE: ThemePaletteDef = {
 // ── Dawn — 启明星（晨星青与地平金）─────────────────────────────────
 const DAWN: ThemePaletteDef = {
   background: 'dark',
-  description: '启明星晨曦调。青蓝边框、暖金标题、雾灰正文，贴近 Tianshu 启动画面。',
+  description: tr('启明星晨曦调。青蓝边框、暖金标题、雾灰正文，贴近 Tianshu 启动画面。'),
   truecolor: {
     primary: '#58d6f5',   // 启明星青蓝：边框 / 图腾 / 重点线
     secondary: '#d8a15c', // 地平金：标题
@@ -327,7 +328,7 @@ const DAWN: ThemePaletteDef = {
 // ── Antigravity 2.0 — Codex cool azure（对齐桌面端 tokens.css）─────
 const ANTIGRAVITY: ThemePaletteDef = {
   background: 'dark',
-  description: 'Codex 风格。天青色冷调 Accent，亮灰结构文本，现代而克制。',
+  description: tr('Codex 风格。天青色冷调 Accent，亮灰结构文本，现代而克制。'),
   truecolor: {
     primary: '#5aa9ff',   // cool azure (desktop --accent)
     secondary: '#8ab4ff', // 浅天青
@@ -356,7 +357,7 @@ const ANTIGRAVITY: ThemePaletteDef = {
 // antigravity 的精炼继任者：同源冷 azure，语义色去糖果化、明度梯度更清晰。
 const COBALT: ThemePaletteDef = {
   background: 'dark',
-  description: '钴蓝·冷调中性 (默认风格)。oklch 调和，明度梯度清晰，视觉极度舒适。',
+  description: tr('钴蓝·冷调中性 (默认风格)。oklch 调和，明度梯度清晰，视觉极度舒适。'),
   truecolor: {
     primary: '#6ab8ff',   // 钴蓝 accent (--tui-accent)
     secondary: '#7dacbf', // 雾青灰
@@ -386,7 +387,7 @@ const COBALT: ThemePaletteDef = {
 // 不靠颜色数量——为长时间编码的低视觉疲劳而调。
 const GRAPHITE: ThemePaletteDef = {
   background: 'dark',
-  description: '石墨冰青 (专业默认)。中性灰阶 + 单一冰青 accent，低饱和语义色，长时间编码不疲劳。',
+  description: tr('石墨冰青 (专业默认)。中性灰阶 + 单一冰青 accent，低饱和语义色，长时间编码不疲劳。'),
   truecolor: {
     primary: '#7cc4e8',   // 冰青 accent — 品牌星 / 光标 / 关键动作
     secondary: '#8b98ab', // 钢灰蓝 — 次级结构
@@ -414,7 +415,7 @@ const GRAPHITE: ThemePaletteDef = {
 // ── Gemini — Indigo, Purple & Mint Teal ───────────────────────────
 const GEMINI: ThemePaletteDef = {
   background: 'dark',
-  description: 'Gemini 风格。结合星云微光渐变 (冷靛蓝与星云紫) 与极光薄荷，极具科技美感。',
+  description: tr('Gemini 风格。结合星云微光渐变 (冷靛蓝与星云紫) 与极光薄荷，极具科技美感。'),
   truecolor: {
     primary: '#818cf8',      // Gemini Indigo
     secondary: '#c084fc',    // Nebula Violet
@@ -446,7 +447,7 @@ const GEMINI: ThemePaletteDef = {
 // 切换视觉记忆连续。
 const PAPER: ThemePaletteDef = {
   background: 'light',
-  description: '纸白亮色。面向白底/浅色终端，全语义色加深降亮，靛蓝 accent。',
+  description: tr('纸白亮色。面向白底/浅色终端，全语义色加深降亮，靛蓝 accent。'),
   truecolor: {
     primary: '#1d4ed8',   // 深靛蓝 accent — 白底 7.5:1
     secondary: '#0e7490', // 深青 — 结构头
@@ -477,7 +478,7 @@ const PAPER: ThemePaletteDef = {
 // 主要价值在 fallback 轨——让用户在任何亮背景终端用终端自己的 palette。
 const LIGHT_ANSI: ThemePaletteDef = {
   background: 'light',
-  description: '亮色 ANSI。16 色纯净版，跟随终端自身配色方案，亮背景友好。',
+  description: tr('亮色 ANSI。16 色纯净版，跟随终端自身配色方案，亮背景友好。'),
   truecolor: {
     primary: '#0550ae',
     secondary: '#8250df', // 亮色系紫 — 原 #116329 与 success 同值，edit 工具冒充测试通过

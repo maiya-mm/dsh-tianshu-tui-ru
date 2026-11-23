@@ -31,6 +31,7 @@ import { toolFamilyColor } from './tool-family.js'
 import { formatDiff, isDiffContent, computeDiffStats } from './diff.js'
 import { buildToolGroupSummary, type ToolGroup } from './tool-group.js'
 
+import { tr } from '../i18n/index.js'
 /** 宽度口径：与 LiveEngine.rowsForLine 一致。工具输出（git diff/代码/日志）
  *  常含 `— … │ →` 等 ambiguous 符号 + CJK，按 .length 截断会低估列宽。 */
 const WIDE = { ambiguousAsWide: true }
@@ -199,7 +200,7 @@ export function formatToolCard(input: FormatToolCardInput, theme: RivetTheme): s
 
   const trimmed = content.replace(/\n+$/, '')
   if (!trimmed) {
-    lines.push(`${indent}${color(LIVE_CARD_BODY_FIRST, theme.dim)}${color('(无输出)', theme.muted)}`)
+    lines.push(`${indent}${color(LIVE_CARD_BODY_FIRST, theme.dim)}${color(tr('(无输出)'), theme.muted)}`)
     return lines
   }
 
@@ -212,7 +213,7 @@ export function formatToolCard(input: FormatToolCardInput, theme: RivetTheme): s
       const diffLines = formatDiff({ content: trimmed, maxLines: Number.MAX_SAFE_INTEGER }, theme)
       lines.push(...indentToolBody(diffLines, indent, theme))
     } else {
-      const hunkLabel = stats.hunks > 0 ? `${stats.hunks} 处修改` : `${changeCount} 行修改`
+      const hunkLabel = stats.hunks > 0 ? `${stats.hunks}${tr(' 处修改')}` : `${changeCount}${tr(' 行修改')}`
       const summary = `⎿ ${hunkLabel} (+${stats.adds} −${stats.dels})`
       lines.push(`${indent}${color(LIVE_CARD_BODY_FIRST, theme.dim)}${color(summary, theme.muted)}`)
     }

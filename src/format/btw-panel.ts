@@ -12,6 +12,7 @@
 
 import { truncateToDisplayWidth } from '../width.js'
 
+import { tr } from '../i18n/index.js'
 /** 面板输入（与 BtwController.peek() 的形状对齐）。 */
 export interface BtwPanelInput {
   /** loading：等待答案；done：答案定稿；error：超时/失败。 */
@@ -39,24 +40,24 @@ export interface BtwPanelOptions {
 export function renderBtwPanel(input: BtwPanelInput, opts: BtwPanelOptions): string[] {
   const rows: string[] = []
   if (input.status === 'loading') {
-    rows.push(`⏳ 侧问: ${truncateToDisplayWidth(input.question, opts.width)}`)
-    rows.push('（Esc 取消；不中断当前对话）')
+    rows.push(`${tr('⏳ 侧问: ')}${truncateToDisplayWidth(input.question, opts.width)}`)
+    rows.push(tr('（Esc 取消；不中断当前对话）'))
     return rows
   }
   if (input.status === 'error') {
-    rows.push(`⚠ 侧问失败: ${truncateToDisplayWidth(input.error ?? '', opts.width)}`)
-    rows.push('（Esc 关闭）')
+    rows.push(`${tr('⚠ 侧问失败: ')}${truncateToDisplayWidth(input.error ?? '', opts.width)}`)
+    rows.push(tr('（Esc 关闭）'))
     return rows
   }
-  rows.push(`💬 侧问: ${truncateToDisplayWidth(input.question, opts.width)}`)
+  rows.push(`${tr('💬 侧问: ')}${truncateToDisplayWidth(input.question, opts.width)}`)
   const answer = input.answer ?? ''
   if (answer === '') {
-    rows.push('（空回答）')
+    rows.push(tr('（空回答）'))
   } else {
     for (const line of answer.split('\n')) {
       rows.push(truncateToDisplayWidth(line, opts.width))
     }
   }
-  rows.push('（Esc 关闭，答案已写入记录）')
+  rows.push(tr('（Esc 关闭，答案已写入记录）'))
   return rows
 }

@@ -16,6 +16,7 @@ import { echoSavedDefault, echoSessionOnly, splitDefaultFlag } from '../startup-
 import { SPARK_ALIASES, validateModelSelection, type LlmCatalogFacet } from './model-validate.js'
 import type { ModelFacet, SlashCommand } from './registry.js'
 
+import { tr } from '../i18n/index.js'
 /** /model 的 effort 白名单（llm 三档：off / high / max）。 */
 export const EFFORT_LEVELS = ['off', 'high', 'max'] as const
 
@@ -50,23 +51,23 @@ export interface StartupCommandDeps {
 
 function echoModel(persist: boolean, hot: boolean, label: string): string {
   if (persist) {
-    return hot ? echoSavedDefault('model', label) : `${echoSavedDefault('model', label)}（当前会话不可热切）`
+    return hot ? echoSavedDefault('model', label) : `${echoSavedDefault('model', label)}${tr('（当前会话不可热切）')}`
   }
-  return hot ? echoSessionOnly('model', label) : `模型已切换: ${label}（当前会话不可热切）。选择器按 S 或 /model default 可设为启动默认`
+  return hot ? echoSessionOnly('model', label) : `${tr('模型已切换: ')}${label}${tr('（当前会话不可热切）。选择器按 S 或 /model default 可设为启动默认')}`
 }
 
 function echoEffort(persist: boolean, hot: boolean, label: string): string {
   if (persist) {
-    return hot ? echoSavedDefault('effort', label) : `${echoSavedDefault('effort', label)}（当前会话不可热切）`
+    return hot ? echoSavedDefault('effort', label) : `${echoSavedDefault('effort', label)}${tr('（当前会话不可热切）')}`
   }
-  return hot ? echoSessionOnly('effort', label) : `推理等级已设为 ${label}（当前会话不可热切）。选择器按 S 或 /effort default 可设为启动默认`
+  return hot ? echoSessionOnly('effort', label) : `${tr('推理等级已设为 ')}${label}${tr('（当前会话不可热切）。选择器按 S 或 /effort default 可设为启动默认')}`
 }
 
 export function createThemeCommand(deps: StartupCommandDeps): SlashCommand {
   return {
     name: 'theme',
     category: '配置',
-    description: '切换主题（Enter/带参=本会话；S 或末尾 default=启动默认；auto/export 子命令）',
+    description: tr('切换主题（Enter/带参=本会话；S 或末尾 default=启动默认；auto/export 子命令）'),
     argsHint: '<name>|auto|export [name]|default',
     run: ({ text, echo }) => {
       const { rest, persist } = splitDefaultFlag(text)
@@ -93,7 +94,7 @@ export function createThemeCommand(deps: StartupCommandDeps): SlashCommand {
         deps.onThemeChanged?.()
         echo(persist ? echoSavedDefault('theme', rest) : echoSessionOnly('theme', rest))
       } else {
-        echo(`未知主题: ${rest}。可用: ${THEME_NAMES.join(', ')} / custom:<name>`)
+        echo(`${tr('未知主题: ')}${rest}${tr('。可用: ')}${THEME_NAMES.join(', ')} / custom:<name>`)
       }
     },
   }
@@ -103,12 +104,12 @@ export function createModelCommand(deps: StartupCommandDeps): SlashCommand {
   return {
     name: 'model',
     category: '配置',
-    description: '查看或切换模型（带参=本会话；S 或末尾 default=启动默认；spark-flash / spark-pro 映射官方 flash / pro）',
+    description: tr('查看或切换模型（带参=本会话；S 或末尾 default=启动默认；spark-flash / spark-pro 映射官方 flash / pro）'),
     argsHint: '[provider/model | spark-flash | spark-pro] [effort] [default]',
     run: async ({ text, echo, ctx }) => {
       const facet = (ctx as unknown as { agentDefaultModel?: ModelFacet }).agentDefaultModel
       if (facet === undefined) {
-        echo('⚠ agent-default-model 服务不可用')
+        echo(tr('⚠ agent-default-model 服务不可用'))
         return
       }
       const current = facet.currentSelection()
@@ -125,7 +126,7 @@ export function createModelCommand(deps: StartupCommandDeps): SlashCommand {
       const [target = '', effortRaw] = rest.split(/\s+/)
       if (effortRaw !== undefined
         && !(EFFORT_LEVELS as readonly string[]).includes(effortRaw)) {
-        echo(`⚠ 不支持的 effort: ${effortRaw}（可用: off / high / max）`)
+        echo(`${tr('⚠ 不支持的 effort: ')}${effortRaw}${tr('（可用: off / high / max）')}`)
         return
       }
       const aliased = SPARK_ALIASES[target]
@@ -152,12 +153,12 @@ export function createEffortCommand(deps: StartupCommandDeps): SlashCommand {
   return {
     name: 'effort',
     category: '配置',
-    description: '设置推理等级（带参=本会话；S 或末尾 default=启动默认；auto 回模型默认）',
+    description: tr('设置推理等级（带参=本会话；S 或末尾 default=启动默认；auto 回模型默认）'),
     argsHint: '[off|high|max|auto|default]',
     run: async ({ text, echo, ctx }) => {
       const facet = (ctx as unknown as { agentDefaultModel?: ModelFacet }).agentDefaultModel
       if (facet === undefined) {
-        echo('⚠ agent-default-model 服务不可用')
+        echo(tr('⚠ agent-default-model 服务不可用'))
         return
       }
       const { rest, persist } = splitDefaultFlag(text)
@@ -180,7 +181,7 @@ export function createEffortCommand(deps: StartupCommandDeps): SlashCommand {
         return
       }
       if (!(EFFORT_LEVELS as readonly string[]).includes(rest)) {
-        echo(`⚠ 不支持的推理等级: ${rest}（可用: off / high / max / auto）`)
+        echo(`${tr('⚠ 不支持的推理等级: ')}${rest}${tr('（可用: off / high / max / auto）')}`)
         return
       }
       const selection = { provider: current.provider, model: current.model, reasoningEffort: rest }
@@ -195,12 +196,12 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
   return {
     name: 'preset',
     category: '配置',
-    description: '查看/切换 agent 预设（带参=本会话；末尾 default=启动默认；仅空白会话可换）',
+    description: tr('查看/切换 agent 预设（带参=本会话；末尾 default=启动默认；仅空白会话可换）'),
     argsHint: '[id] [default]',
     run: async ({ text, echo, ctx }) => {
       const facet = ctx.reflect.get('agentPresets', false) as PresetFacet | undefined
       if (facet === undefined) {
-        echo('⚠ agent-presets 服务不可用（host 未装配 agent 预设）')
+        echo(tr('⚠ agent-presets 服务不可用（host 未装配 agent 预设）'))
         return
       }
       const { rest, persist } = splitDefaultFlag(text)
@@ -208,7 +209,7 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
         const agent = deps.currentAgent()
         const current = agent === null ? undefined : facet.composedPreset?.(agent.ctx)
         if (current === undefined) {
-          echo('⚠ 当前无预设可设为启动默认')
+          echo(tr('⚠ 当前无预设可设为启动默认'))
           return
         }
         deps.persistPresetDefault(current)
@@ -220,7 +221,7 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
         const agent = deps.currentAgent()
         const current = agent === null ? undefined : facet.composedPreset?.(agent.ctx)
         const saved = deps.currentDefaultPreset()
-        echo(`agent 预设 (${presets.length}):`)
+        echo(`${tr('agent 预设 (')}${presets.length}):`)
         for (const preset of presets) {
           const mark = preset.id === current ? '*' : ' '
           const star = preset.id === saved ? '★' : ' '
@@ -228,18 +229,18 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
           echo(` ${mark}${star}${name} (${preset.id})`)
           const details = presetListDetails(preset.id, preset.description)
           if (details.capability !== undefined) echo(`    ${details.capability}`)
-          if (details.tools !== undefined) echo(`    工具: ${details.tools}`)
+          if (details.tools !== undefined) echo(`${tr('    工具: ')}${details.tools}`)
         }
         let currentLine = current === undefined
-          ? '当前: 未装配（host 默认）'
-          : `当前: ${current} · ${presetShortLabel(current)}`
-        if (saved !== undefined) currentLine += ` · 启动默认: ${saved}`
+          ? tr('当前: 未装配（host 默认）')
+          : `${tr('当前: ')}${current} · ${presetShortLabel(current)}`
+        if (saved !== undefined) currentLine += `${tr(' · 启动默认: ')}${saved}`
         if (agent !== null) {
           const wire = wireToolNames(agent.session.snapshotEvents())
           const surface = formatWireSurface(wire)
           if (surface !== undefined) {
             const phase = wirePhaseLabel(wire)
-            currentLine += ` · wire: ${surface}${phase === undefined ? '' : `（${phase}）`}`
+            currentLine += ` · wire: ${surface}${phase === undefined ? '' : `${tr('（')}${phase}${tr('）')}`}`
           }
         }
         echo(currentLine)
@@ -247,11 +248,11 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
       }
       const agent = deps.currentAgent()
       if (agent === null) {
-        echo('当前无会话，无法切换预设')
+        echo(tr('当前无会话，无法切换预设'))
         return
       }
       if (!deps.isBlankSession()) {
-        echo('⚠ 会话已产生内容，无法切换预设（仅空白会话可换；新会话默认仍用当前预设）')
+        echo(tr('⚠ 会话已产生内容，无法切换预设（仅空白会话可换；新会话默认仍用当前预设）'))
         return
       }
       try {
@@ -262,7 +263,7 @@ export function createPresetCommand(deps: StartupCommandDeps): SlashCommand {
         const label = `${preset.name ?? preset.id} (${preset.id})`
         echo(persist ? echoSavedDefault('preset', label) : echoSessionOnly('preset', label))
       } catch (error) {
-        echo(`切换失败: ${error instanceof Error ? error.message : String(error)}`)
+        echo(`${tr('切换失败: ')}${error instanceof Error ? error.message : String(error)}`)
       }
     },
   }

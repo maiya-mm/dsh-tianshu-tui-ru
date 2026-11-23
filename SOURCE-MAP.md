@@ -141,6 +141,7 @@
 | src/host-stderr-guard.ts | — | new（宿主 stderr 拦截：TUI 占用 TTY 期间把宿主诊断日志——如 llm-deepseek 的 /models 目录刷新——追加到 ~/.dsh-tui/host-stderr.log 并按 2MB 轮转，避免盖住输入框；插件卸载时还原，DSH_TUI_HOST_STDERR=1 可关闭） |
 | src/i18n/index.ts | — | new（i18n 基础层：tr() 单点翻译，key=源码中文原文；语言优先级 prefs.lang > env DSH_TUI_LANG > zh 恒等） |
 | src/i18n/ru.ts | — | new（俄语字典 seed：欢迎 tips/footer 提示/slash 描述，数据驱动，不改正中文源串） |
+| src/i18n/ru/extra.ts | — | new（俄语字典 хвост: команды/панели/оверлеи/сообщения; вынесен из ru.ts из-за лимита строк, спред в RU） |
 | src/index.ts | — | new |
 | src/input-history.ts | — | new（输入历史持久化：~/.dsh-tui/input-history.json，1000 条上限、进程内追加队列 + 重读合并原子写；上游 history.ts 模式，去重语义取本仓更强的全列表去重） |
 | src/lsp/lsp-bridge.ts | — | new（LSP 诊断桥：懒生命周期 + 展示层诊断缓存；扩展名不支持/server 未安装一次标记；per-file 合并与冷却） |

@@ -14,6 +14,7 @@
 import { truncateToLiveWidth } from './live-card.js'
 import type { TaskItem } from './task-panel.js'
 
+import { tr } from '../i18n/index.js'
 /** 面板选项。 */
 export interface TodosPanelOptions {
   /** 终端列数（行截断预算）。 */
@@ -23,7 +24,7 @@ export interface TodosPanelOptions {
 }
 
 /** 面板标题前缀。 */
-const TITLE = '📋 待办'
+const TITLE = tr('📋 待办')
 /** 默认态条目上限（超出留折叠尾行）。 */
 const DEFAULT_ITEM_CAP = 5
 const STATUS_RANK: Record<TaskItem['status'], number> = {
@@ -75,8 +76,8 @@ function appendItems(rows: string[], items: TaskItem[], width: number): void {
  */
 export function projectTodosPanel(todos: TaskItem[] | null, opts: TodosPanelOptions): string[] {
   const width = Math.max(1, opts.width)
-  if (todos === null) return [truncateToLiveWidth(`${TITLE} ·（尚无待办）`, width)]
-  if (todos.length === 0) return [truncateToLiveWidth(`${TITLE} · 全部完成 ✓`, width)]
+  if (todos === null) return [truncateToLiveWidth(`${TITLE}${tr(' ·（尚无待办）')}`, width)]
+  if (todos.length === 0) return [truncateToLiveWidth(`${TITLE}${tr(' · 全部完成 ✓')}`, width)]
   const rows = [countHeader(todos, width)]
   if (!opts.expanded && !hasOpenWork(todos)) return rows
   const ranked = sortedTodos(todos)

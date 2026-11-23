@@ -20,6 +20,7 @@ import { getTheme } from '../theme.js'
 import { truncateToDisplayWidth } from '../width.js'
 import { highlightQuery, isSmartCaseSensitive } from './highlight.js'
 
+import { tr } from '../i18n/index.js'
 /** 搜索数据源的最小形状（adapter/transcript 的 TranscriptMessage.text 满足它）。 */
 export interface SearchableMessage {
   text: string
@@ -182,9 +183,9 @@ export class HistorySearchOverlay implements OverlayRenderer {
     // 搜索栏：语义显式标注（#55——搜索的是会话历史，不是编辑区文本）
     const counter = this.matches.length > 0 ? `  ${this.current + 1}/${this.matches.length}` : ''
     if (this.jumping) {
-      rows.push(color(`/ ${this.query}  [跳转]${counter}`, theme.secondary))
+      rows.push(color(`/ ${this.query}${tr('  [跳转]')}${counter}`, theme.secondary))
     } else {
-      const queryText = this.query === '' ? '输入关键词搜索会话历史…' : this.query
+      const queryText = this.query === '' ? tr('输入关键词搜索会话历史…') : this.query
       rows.push(color(`/ ${queryText}${this.query === '' ? '' : '▌'}${counter}`, theme.secondary))
     }
     // 消息区：从当前匹配（或第一条）开始渲染，单行截断
@@ -198,7 +199,7 @@ export class HistorySearchOverlay implements OverlayRenderer {
       /* v8 ignore next -- 数组元素由装配方构造，无 undefined；noUncheckedIndexedAccess 防御 */
       if (message === undefined) continue
       const isMatch = this.matches.includes(i)
-      const text = message.text === '' ? '(空消息)' : message.text
+      const text = message.text === '' ? tr('(空消息)') : message.text
       const line = truncateToDisplayWidth(text, contentWidth)
       // A2：命中行内高亮查询词本身（截断后包裹，反色块足够醒目）
       const body = isMatch && this.query !== ''
@@ -214,8 +215,8 @@ export class HistorySearchOverlay implements OverlayRenderer {
     }
     // 底部 hints（按阶段）
     rows.push(color(this.jumping
-      ? 'n/N 下一个/上一个 · p/P 上一个 · Enter 重新编辑 · Esc 退出'
-      : '输入即过滤 · Enter 确认后 n/N 跳转 · Esc 退出', theme.muted))
+      ? tr('n/N 下一个/上一个 · p/P 上一个 · Enter 重新编辑 · Esc 退出')
+      : tr('输入即过滤 · Enter 确认后 n/N 跳转 · Esc 退出'), theme.muted))
     return rows
   }
 

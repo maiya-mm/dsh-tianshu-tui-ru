@@ -16,20 +16,21 @@ import type { Agent, AgentCancelCause, AgentHandle, CancelOptions } from '@deeps
 import type { SessionId } from '@deepseek-ai/dsh-session'
 import type { AttachmentStore, ImageMediaType, SaveImageAttachment } from '@deepseek-ai/dsh-attachment'
 
+import { tr } from '../i18n/index.js'
 /** 解析 data URL（`data:<mediaType>;base64,<bytes>`）为 attachment 保存入参。 */
 function parseImageDataUrl(dataUrl: string): SaveImageAttachment {
   const match = /^data:([a-zA-Z0-9./+-]+);base64,(.+)$/.exec(dataUrl)
   if (match === null) {
-    throw new Error(`无法解析图片 data URL（缺 base64 载荷）：${dataUrl.slice(0, 40)}…`)
+    throw new Error(`${tr('无法解析图片 data URL（缺 base64 载荷）：')}${dataUrl.slice(0, 40)}…`)
   }
   const mediaType = match[1]
   const payload = match[2]
   if (mediaType === undefined || payload === undefined) {
     // 正则匹配成功时两组必然存在；显式收窄以通过严格类型检查。
-    throw new Error(`无法解析图片 data URL（分组缺失）：${dataUrl.slice(0, 40)}…`)
+    throw new Error(`${tr('无法解析图片 data URL（分组缺失）：')}${dataUrl.slice(0, 40)}…`)
   }
   if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(mediaType)) {
-    throw new Error(`不支持的图片 media type：${mediaType}`)
+    throw new Error(`${tr('不支持的图片 media type：')}${mediaType}`)
   }
   return {
     data: Buffer.from(payload, 'base64'),
@@ -57,7 +58,7 @@ async function toUserMessage(ctx: Context, text: string, images?: string[]): Pro
   const content: ContentBlock[] = [{ type: 'text' as const, text }]
   const attachments = ctx.reflect.get('attachments', false) as AttachmentStore | undefined
   if (attachments === undefined) {
-    throw new Error('图片发送需要 attachments 服务（attachment-local 未装配）')
+    throw new Error(tr('图片发送需要 attachments 服务（attachment-local 未装配）'))
   }
   for (const dataUrl of images) {
     const attachment = await attachments.saveImage(parseImageDataUrl(dataUrl))

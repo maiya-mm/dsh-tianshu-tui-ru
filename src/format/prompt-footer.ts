@@ -36,16 +36,16 @@ export interface FooterTip {
  * 其余 1。新增命令时在此补一条即可让用户在空闲态可发现。
  */
 export const FOOTER_TIPS: readonly FooterTip[] = [
-  { text: '/ 命令 · ctrl+p 面板', weight: 3 },
-  { text: '/info 输入区信息密度', weight: 2 },
-  { text: '/density 紧凑渲染', weight: 2 },
-  { text: 'shift+tab 模式循环', weight: 1 },
-  { text: '/glance 隐藏 metrics 段', weight: 1 },
-  { text: '/preset 切换 agent 面', weight: 1 },
-  { text: '/theme 换主题', weight: 1 },
-  { text: 'ctrl+o 展开推理', weight: 1 },
-  { text: 'ctrl+n 新会话 · ctrl+s 恢复', weight: 1 },
-  { text: '/help 全部命令', weight: 1 },
+  { text: tr('/ 命令 · ctrl+p 面板'), weight: 3 },
+  { text: tr('/info 输入区信息密度'), weight: 2 },
+  { text: tr('/density 紧凑渲染'), weight: 2 },
+  { text: tr('shift+tab 模式循环'), weight: 1 },
+  { text: tr('/glance 隐藏 metrics 段'), weight: 1 },
+  { text: tr('/preset 切换 agent 面'), weight: 1 },
+  { text: tr('/theme 换主题'), weight: 1 },
+  { text: tr('ctrl+o 展开推理'), weight: 1 },
+  { text: tr('ctrl+n 新会话 · ctrl+s 恢复'), weight: 1 },
+  { text: tr('/help 全部命令'), weight: 1 },
 ]
 
 /** 权重展开序列（index 取模即得轮播序；展开缓存避免每次重算）。 */
@@ -134,20 +134,20 @@ export interface FormatPromptFooterInput {
 
 /** 审批挂起提示段缺省文案（与 actions/builtin-actions 的 approval 域 footerHint 同源对齐）。 */
 const DEFAULT_APPROVAL_HINTS: readonly string[] =
-  ['y 允许', 'p 此命令不再问', 't 记住此工具', 'a 全放行', 'n 拒绝', 'f 拒绝并说明', 'esc 取消']
+  [tr('y 允许'), tr('p 此命令不再问'), tr('t 记住此工具'), tr('a 全放行'), tr('n 拒绝'), tr('f 拒绝并说明'), tr('esc 取消')]
 
 /** 检查面板提示段缺省文案（inspect.close 动作 footerHint + 静态「/ 命令」尾段）。 */
-const DEFAULT_INSPECT_HINTS: readonly string[] = ['esc 关闭', '/ 命令']
+const DEFAULT_INSPECT_HINTS: readonly string[] = [tr('esc 关闭'), tr('/ 命令')]
 
 /**
  * 审批提示段「长文案→短文案」中间档（显式分级的第一级）：key 为段首键位
  * token。y/n/esc 文案已最短不收缩；未登记的自定义段原样保留。
  */
 const APPROVAL_HINT_SHORT: Readonly<Record<string, string>> = {
-  p: 'p 不再问',
-  t: 't 记住',
-  a: 'a 放行',
-  f: 'f 拒绝说明',
+  p: tr('p 不再问'),
+  t: tr('t 记住'),
+  a: tr('a 放行'),
+  f: tr('f 拒绝说明'),
 }
 
 /**

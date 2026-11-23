@@ -1,11 +1,3 @@
-/**
- * startup-defaults — 会话应用 vs 启动默认的纯函数面。
- *
- * 选择器 Enter / 带参命令 = 仅本会话；选择器 S / 末尾 default = 写启动默认。
- * 回显必须点名「本会话」或「启动默认」，避免用户分不清。
- *
- * @module @huiliyi37/dsh-tianshu-tui/startup-defaults
- */
 /** 启动项种类（回显与 /xxx default 提示共用）。 */
 export type StartupKind = 'theme' | 'model' | 'effort' | 'density' | 'preset' | 'vim';
 /** 剥末尾 default 标志：`/theme paper default` → rest=paper persist=true。 */

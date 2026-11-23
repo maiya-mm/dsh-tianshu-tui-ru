@@ -13,6 +13,7 @@
 
 import type { ActionContext, KeyAction, KeyBinding } from './types.js'
 
+import { tr } from '../i18n/index.js'
 /** 键位列展示名（keymap 用）：语义名 → 惯用写法。 */
 const KEY_LABELS: Partial<Record<string, string>> = {
   return: 'Enter',
@@ -117,6 +118,6 @@ export function projectApprovalHints(actions: readonly KeyAction[], ctx?: Action
  * @returns 提示段文本数组。
  */
 export function projectInspectHints(actions: readonly KeyAction[]): string[] {
-  const close = actions.find(a => a.id === 'inspect.close')?.footerHint ?? 'esc 关闭'
-  return [close, '/ 命令']
+  const close = actions.find(a => a.id === 'inspect.close')?.footerHint ?? tr('esc 关闭')
+  return [close, tr('/ 命令')]
 }

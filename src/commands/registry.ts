@@ -44,6 +44,7 @@ import {
   type StartupCommandDeps,
 } from './startup-commands.js'
 
+import { tr } from '../i18n/index.js'
 /**
  * Slash 命令执行上下文——TuiApp 在分发时注入。
  */
@@ -245,10 +246,10 @@ export class SlashCommandRegistry {
       // 空态引导：类路径/参数输入（/src/main.ts、/tmp/foo bar）静默不误报；
       // 其余无匹配提示 Enter 提交看相近建议（纠错闭环入口）。
       if (token.includes('/') || token.includes('.') || token.includes(' ')) return null
-      return '无匹配命令（Enter 提交查看相近建议）'
+      return tr('无匹配命令（Enter 提交查看相近建议）')
     }
     const parts = matches.map(c => `/${c.name}${c.argsHint === undefined ? '' : ` ${c.argsHint}`}`)
-    return `命令: ${parts.join('   ')}`
+    return `${tr('命令: ')}${parts.join('   ')}`
   }
 }
 
@@ -312,7 +313,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
     {
       name: 'session',
       category: '会话',
-      description: '会话管理：new 新建，list 列出，switch 切换',
+      description: tr('会话管理：new 新建，list 列出，switch 切换'),
       argsHint: 'new|list|switch <id>',
       run: async ({ text, echo, ctx }) => {
         /* v8 ignore next -- split(/\s+/) 恒返回非空数组，[0] 必有值；noUncheckedIndexedAccess 收窄防御 */
@@ -324,13 +325,13 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
         }
         if (sub === 'new') {
           const id = await deps.newSession()
-          echo(`已新建会话: ${id}`)
+          echo(`${tr('已新建会话: ')}${id}`)
           return
         }
         if (sub === 'list') {
           const rows = await listSessions(ctx)
           if (rows.length === 0) {
-            echo('（当前无会话）')
+            echo(tr('（当前无会话）'))
             return
           }
           // 标题数据源与选择器同款（title 事件 fold → 首条真人消息 → 「新对话」）。
@@ -347,72 +348,72 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           // P3：多会话切换——目标 id 必须是 live store 中已存在的会话。
           const id = text.slice(sub.length).trim()
           if (id === '') {
-            echo('用法: /session switch <id>（/session list 查看 id）')
+            echo(tr('用法: /session switch <id>（/session list 查看 id）'))
             return
           }
           await deps.switchSession(id)
-          echo(`已切换会话: ${id}`)
+          echo(`${tr('已切换会话: ')}${id}`)
           return
         }
-        echo('用法: /session new|list|switch <id>')
+        echo(tr('用法: /session new|list|switch <id>'))
       },
     },
     {
       name: 'fork',
       category: '会话',
-      description: '分叉当前会话（复制历史到新会话并切换）',
+      description: tr('分叉当前会话（复制历史到新会话并切换）'),
       argsHint: '[directive]',
       run: async ({ text, echo }) => {
         const directive = text.trim()
         const id = directive === '' ? await deps.forkSession() : await deps.forkSession({ directive })
-        echo(`已分叉会话: ${id}`)
+        echo(`${tr('已分叉会话: ')}${id}`)
       },
     },
     {
       name: 'rewind',
       category: '面板',
-      description: '回退到一条用户消息（C3 项 3：会话截断 + 可选文件回退）',
+      description: tr('回退到一条用户消息（C3 项 3：会话截断 + 可选文件回退）'),
       argsHint: '',
       run: ({ echo }) => {
         if (!deps.rewindSession()) {
-          echo('⚠ 当前无可回退的会话')
+          echo(tr('⚠ 当前无可回退的会话'))
         }
       },
     },
     {
       name: 'branch',
       category: '会话',
-      description: '分叉当前会话（/fork 别名）',
+      description: tr('分叉当前会话（/fork 别名）'),
       run: async ({ echo }) => {
         const id = await deps.forkSession()
-        echo(`已分叉会话: ${id}`)
+        echo(`${tr('已分叉会话: ')}${id}`)
       },
     },
     createModelCommand(deps),
     {
       name: 'key',
       category: '认证',
-      description: '配置模型供应商 API 密钥（选择供应商 → 掩码输入 + 联网验证；保存即生效）',
+      description: tr('配置模型供应商 API 密钥（选择供应商 → 掩码输入 + 联网验证；保存即生效）'),
       run: () => { deps.openKeyDialog() },
     },
     {
       name: 'login',
       category: '认证',
-      description: '配置模型供应商 API 密钥（/key 别名）',
+      description: tr('配置模型供应商 API 密钥（/key 别名）'),
       run: () => { deps.openKeyDialog() },
     },
     {
       name: 'update',
       category: '系统',
-      description: '检查插件更新（对照 npm latest；发现新版提示手动更新命令）',
+      description: tr('检查插件更新（对照 npm latest；发现新版提示手动更新命令）'),
       run: async ({ echo }) => {
         const result = await deps.checkForUpdate()
         if (result.kind === 'latest') {
-          echo(`发现新版本 ${result.latest}（当前 ${result.current}）。手动更新：npx -y @deepseek-ai/dsh plugin --profile tui add ${TUI_PACKAGE}@latest；或重启后自动更新`)
+          echo(`${tr('发现新版本 ')}${result.latest}${tr('（当前 ')}${result.current}${tr('）。手动更新：npx -y @deepseek-ai/dsh plugin --profile tui add ')}${TUI_PACKAGE}${tr('@latest；或重启后自动更新')}`)
         } else if (result.kind === 'current') {
-          echo(`已是最新版本（${result.current}）`)
+          echo(`${tr('已是最新版本（')}${result.current}${tr('）')}`)
         } else {
-          echo(`⚠ 更新检查失败：${result.error}`)
+          echo(`${tr('⚠ 更新检查失败：')}${result.error}`)
         }
       },
     },
@@ -421,16 +422,16 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
     {
       name: 'clear',
       category: '会话',
-      description: '清空当前会话滚动区并收起命令面板',
+      description: tr('清空当前会话滚动区并收起命令面板'),
       run: ({ echo }) => {
         deps.clearScrollback()
-        echo('已清空当前会话滚动区')
+        echo(tr('已清空当前会话滚动区'))
       },
     },
     {
       name: 'scroll',
       category: '会话',
-      description: '分页查看会话转录（滚动 / 搜索 / n·N 跳转）',
+      description: tr('分页查看会话转录（滚动 / 搜索 / n·N 跳转）'),
       run: () => {
         deps.openScrollPager()
       },
@@ -438,23 +439,23 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
     {
       name: 'compact',
       category: '会话',
-      description: '压缩当前会话（需 compact 服务）',
+      description: tr('压缩当前会话（需 compact 服务）'),
       run: async ({ text: _text, echo, ctx, sessionId }) => {
         // reflect.get 读取可选服务（Cordis 4 注入代理：属性访问未注册服务
         // 抛 "without inject"——与 T4 sessionProjections 同款修复）
         const agent = sessionId === null ? undefined : ctx.agents.get(sessionId)
         const compact = serviceForAgent(ctx, agent, 'compact') as CompactFacet | undefined
         if (compact === undefined) {
-          echo('⚠ compact 服务不可用（未加载 compact 插件）')
+          echo(tr('⚠ compact 服务不可用（未加载 compact 插件）'))
           return
         }
         if (sessionId === null) {
-          echo('⚠ 当前无会话')
+          echo(tr('⚠ 当前无会话'))
           return
         }
         const session = ctx.sessions.get(sessionId)
         if (session === undefined) {
-          echo('⚠ 会话不存在')
+          echo(tr('⚠ 会话不存在'))
           return
         }
         /* v8 ignore next -- agent 已在上方 undefined 检查放行，此处仅类型收窄；noUncheckedIndexedAccess 防御 */
@@ -463,29 +464,29 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           'pressure',
           new AbortController().signal,
         )
-        echo(result === null ? '无需压缩（或无可压缩范围）' : '压缩完成')
+        echo(result === null ? tr('无需压缩（或无可压缩范围）') : tr('压缩完成'))
       },
     },
     {
       name: 'goal',
       category: '面板',
-      description: '目标管理：查看/创建/暂停/恢复/完成/阻塞（需 goal 服务）',
+      description: tr('目标管理：查看/创建/暂停/恢复/完成/阻塞（需 goal 服务）'),
       argsHint: '[create <objective>|pause|resume|complete|block]',
       run: ({ text, echo, ctx, sessionId }) => {
         // reflect.get 读取可选服务（与 /compact 同款：goal 插件未装配时
         // 返回 undefined，命令报不可用——fails loud，禁止静默空操作）。
         const goals = ctx.reflect.get('goals', false) as GoalFacet | undefined
         if (goals === undefined) {
-          echo('⚠ goal 服务不可用（未加载 goal 插件）')
+          echo(tr('⚠ goal 服务不可用（未加载 goal 插件）'))
           return
         }
         if (sessionId === null) {
-          echo('⚠ 当前无会话')
+          echo(tr('⚠ 当前无会话'))
           return
         }
         const agent = ctx.agents.get(sessionId)
         if (agent === undefined) {
-          echo('⚠ 会话不存在')
+          echo(tr('⚠ 会话不存在'))
           return
         }
         /* v8 ignore next -- split(/\s+/) 恒返回非空数组，[0] 必有值；noUncheckedIndexedAccess 收窄防御 */
@@ -496,7 +497,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           // renderLive 刷新）。
           const view = goals.get(agent)
           if (view === undefined) {
-            echo('（当前无目标）')
+            echo(tr('（当前无目标）'))
             return
           }
           echo(formatGoalView(view))
@@ -504,37 +505,37 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
         }
         if (verb === 'create') {
           if (rest === '') {
-            echo('用法: /goal create <objective>')
+            echo(tr('用法: /goal create <objective>'))
             return
           }
           const view = goals.create(agent, { objective: rest })
-          echo(`目标已创建: ${view.objective}（phase: ${view.phase}）`)
+          echo(`${tr('目标已创建: ')}${view.objective}${tr('（phase: ')}${view.phase}${tr('）')}`)
           return
         }
         const MUTATIONS = ['pause', 'resume', 'complete', 'block'] as const
         if (!(MUTATIONS as readonly string[]).includes(verb)) {
-          echo('用法: /goal [create <objective>|pause|resume|complete|block]')
+          echo(tr('用法: /goal [create <objective>|pause|resume|complete|block]'))
           return
         }
         const current = goals.get(agent)
         if (current === undefined) {
-          echo('（当前无目标，无法执行该操作）')
+          echo(tr('（当前无目标，无法执行该操作）'))
           return
         }
         const ref: GoalRefFacet = { id: current.id, revision: current.revision }
         if (verb === 'pause') {
           const view = goals.pause(agent, ref)
-          echo(`目标已暂停: ${view.objective}`)
+          echo(`${tr('目标已暂停: ')}${view.objective}`)
           return
         }
         if (verb === 'resume') {
           const view = goals.resume(agent, ref)
-          echo(`目标已恢复: ${view.objective}（phase: ${view.phase}）`)
+          echo(`${tr('目标已恢复: ')}${view.objective}${tr('（phase: ')}${view.phase}${tr('）')}`)
           return
         }
         if (verb === 'complete') {
           const view = goals.complete(agent, ref)
-          echo(`目标已完成: ${view.objective}`)
+          echo(`${tr('目标已完成: ')}${view.objective}`)
           return
         }
         /* v8 ignore next -- MUTATIONS 过滤 + 前三 if 提前 return，此处 verb 恒为 'block'，false 侧不可达 */
@@ -543,7 +544,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
             code: 'user-requested',
             message: rest === '' ? 'blocked by user via /goal' : rest,
           })
-          echo(`目标已阻塞: ${view.objective}`)
+          echo(`${tr('目标已阻塞: ')}${view.objective}`)
           return
         }
       },
@@ -551,7 +552,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
     {
       name: 'tasks',
       category: '面板',
-      description: '任务窗格：无参切换；kill <id> 终止后台任务',
+      description: tr('任务窗格：无参切换；kill <id> 终止后台任务'),
       argsHint: '[kill <id>]',
       run: ({ text, echo, ctx }) => {
         /* v8 ignore next -- split(/\s+/) 恒返回非空数组，[0] 必有值；noUncheckedIndexedAccess 收窄防御 */
@@ -561,20 +562,20 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           // 与 /compact /goal 同款——tasks 插件未装配时报不可用，fails loud）。
           const id = text.slice(sub.length).trim()
           if (id === '') {
-            echo('用法: /tasks kill <id>')
+            echo(tr('用法: /tasks kill <id>'))
             return
           }
           const tasks = ctx.reflect.get('tasks', false) as TasksFacet | undefined
           if (tasks === undefined) {
-            echo('⚠ tasks 服务不可用（未加载 tasks 插件）')
+            echo(tr('⚠ tasks 服务不可用（未加载 tasks 插件）'))
             return
           }
           const result = tasks.kill(id)
-          echo(result === 'already-finished' ? `任务已结束: ${id}` : `已请求终止任务: ${id}`)
+          echo(result === 'already-finished' ? `${tr('任务已结束: ')}${id}` : `${tr('已请求终止任务: ')}${id}`)
           return
         }
         if (sub !== '') {
-          echo('用法: /tasks [kill <id>]')
+          echo(tr('用法: /tasks [kill <id>]'))
           return
         }
         deps.toggleTaskPanel()
@@ -583,59 +584,59 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
     {
       name: 'subagents',
       category: '面板',
-      description: '切换委派树面板（subagent 层级投影）',
+      description: tr('切换委派树面板（subagent 层级投影）'),
       run: () => { deps.toggleSubagentsPanel() },
     },
     {
       name: 'workflow',
       category: '面板',
-      description: '切换 workflow 运行中面板',
+      description: tr('切换 workflow 运行中面板'),
       run: () => { deps.toggleWorkflowPanel() },
     },
     {
       name: 'btw',
       category: '会话',
-      description: '侧问：向后台 agent 提问（不中断当前对话）',
+      description: tr('侧问：向后台 agent 提问（不中断当前对话）'),
       argsHint: '<question>',
       run: async ({ text, echo }) => {
         const question = text.trim()
         if (question === '') {
-          echo('用法: /btw <question>')
+          echo(tr('用法: /btw <question>'))
           return
         }
         const started = await deps.askBtw(question)
-        if (!started) echo('⚠ 当前无会话或已有挂起的侧问')
+        if (!started) echo(tr('⚠ 当前无会话或已有挂起的侧问'))
       },
     },
     {
       name: 'remember',
       category: '会话',
-      description: '保存一条项目记忆（写入 .dsh/memory/global.md）',
+      description: tr('保存一条项目记忆（写入 .dsh/memory/global.md）'),
       argsHint: '<text>',
       run: async ({ text, echo, ctx }) => {
         const memory = ctx.reflect.get('memory', false) as MemoryFacet | undefined
         if (memory === undefined) {
-          echo('⚠ memory 服务不可用（未加载 memory 插件）')
+          echo(tr('⚠ memory 服务不可用（未加载 memory 插件）'))
           return
         }
         const content = text.trim()
         if (content === '') {
-          echo('用法: /remember <text>')
+          echo(tr('用法: /remember <text>'))
           return
         }
         const entry = await memory.save({ text: content, scope: 'global', tags: [], source: 'user' })
-        echo(`已保存记忆: ${entry.id}`)
+        echo(`${tr('已保存记忆: ')}${entry.id}`)
       },
     },
     {
       name: 'memory',
       category: '会话',
-      description: '打开记忆浏览器；delete <id> 直接删除',
+      description: tr('打开记忆浏览器；delete <id> 直接删除'),
       argsHint: '[delete <id>]',
       run: async ({ text, echo, ctx }) => {
         const memory = ctx.reflect.get('memory', false) as MemoryFacet | undefined
         if (memory === undefined) {
-          echo('⚠ memory 服务不可用（未加载 memory 插件）')
+          echo(tr('⚠ memory 服务不可用（未加载 memory 插件）'))
           return
         }
         /* v8 ignore next -- split(/\s+/) 恒返回非空数组，[0] 必有值；noUncheckedIndexedAccess 收窄防御 */
@@ -643,26 +644,26 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
         if (sub === 'delete') {
           const id = text.slice(sub.length).trim()
           if (id === '') {
-            echo('用法: /memory delete <id>')
+            echo(tr('用法: /memory delete <id>'))
             return
           }
           await memory.delete(id)
-          echo(`已删除记忆: ${id}`)
+          echo(`${tr('已删除记忆: ')}${id}`)
           return
         }
         if (sub !== '') {
-          echo('用法: /memory [delete <id>]')
+          echo(tr('用法: /memory [delete <id>]'))
           return
         }
         if (!await deps.openMemoryBrowser()) {
-          echo('⚠ 无法打开记忆浏览器')
+          echo(tr('⚠ 无法打开记忆浏览器'))
         }
       },
     },
     {
       name: 'doctor',
       category: '系统',
-      description: '终端诊断：检测终端能力并输出报告；fix <id> 查看修复指引',
+      description: tr('终端诊断：检测终端能力并输出报告；fix <id> 查看修复指引'),
       argsHint: '[fix <id>]',
       run: ({ text, echo }) => {
         const sub = text.trim()
@@ -670,49 +671,49 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           const idStr = sub.slice(3).trim()
           const id = Number(idStr)
           if (Number.isNaN(id) || idStr === '') {
-            echo('用法: /doctor fix <id>')
+            echo(tr('用法: /doctor fix <id>'))
             return
           }
           const guidance = getDoctorFixGuidance(id)
           if (guidance === null) {
-            echo(`未知修复项: ${id}`)
+            echo(`${tr('未知修复项: ')}${id}`)
             return
           }
           echo(guidance)
           return
         }
         if (sub !== '') {
-          echo('用法: /doctor [fix <id>]')
+          echo(tr('用法: /doctor [fix <id>]'))
           return
         }
         const cols = process.stdout.columns
         const rows = process.stdout.rows
-        const background = process.env.COLORFGBG !== undefined ? '已检测' : '未检测'
+        const background = process.env.COLORFGBG !== undefined ? tr('已检测') : tr('未检测')
         const checks = collectDoctorReport(cols, rows, background)
-        echo('终端诊断报告:')
+        echo(tr('终端诊断报告:'))
         for (const c of checks) {
           const icon = c.status === 'ok' ? '✓' : c.status === 'warn' ? '⚠' : 'ℹ'
-          const fixTag = c.fixId !== undefined ? ` [修复 ${c.fixId}]` : ''
+          const fixTag = c.fixId !== undefined ? `${tr(' [修复 ')}${c.fixId}]` : ''
           echo(`  ${icon} ${c.name}: ${c.value}${fixTag}`)
         }
         const fixable = checks.filter(c => c.fixId !== undefined)
         if (fixable.length > 0) {
           echo('')
-          echo('可修复项:')
+          echo(tr('可修复项:'))
           for (const c of fixable) {
             const id = c.fixId
             if (id === undefined) continue
             const fix = getDoctorFixGuidance(id)
             if (fix !== null) echo(`  [${id}] ${fix.split('\n')[0]}`)
           }
-          echo('运行 /doctor fix <id> 查看详细修复指引')
+          echo(tr('运行 /doctor fix <id> 查看详细修复指引'))
         }
       },
     },
     {
       name: 'mcp',
       category: '系统',
-      description: 'MCP 状态：列出已连接 server 与工具数；tools <name> 查看工具清单',
+      description: tr('MCP 状态：列出已连接 server 与工具数；tools <name> 查看工具清单'),
       argsHint: '[tools <server>]',
       run: ({ text, echo, ctx }) => {
         // 读 mcp-client 的聚合状态表（'mcp.status'：serverName → status）；
@@ -722,87 +723,87 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
           | Map<string, { serverName: string; getToolCount(): number; listToolNames(): string[] }>
           | undefined
         if (table === undefined || table.size === 0) {
-          echo('⚠ 无 MCP server 连接（检查 cordis.yml 中 mcp-client 插件配置）')
+          echo(tr('⚠ 无 MCP server 连接（检查 cordis.yml 中 mcp-client 插件配置）'))
           return
         }
         const sub = text.trim()
         if (sub.startsWith('tools')) {
           const target = sub.slice(5).trim()
           if (target === '') {
-            echo('用法: /mcp tools <server>')
+            echo(tr('用法: /mcp tools <server>'))
             return
           }
           const status = table.get(target)
           if (status === undefined) {
-            echo(`未知 MCP server: ${target}。可用: ${[...table.keys()].join(', ')}`)
+            echo(`${tr('未知 MCP server: ')}${target}${tr('。可用: ')}${[...table.keys()].join(', ')}`)
             return
           }
           const names = status.listToolNames().sort()
-          echo(`${target} (${names.length} 工具):`)
+          echo(`${target} (${names.length}${tr(' 工具):')}`)
           for (const name of names) echo(`  ${name}`)
           return
         }
         if (sub !== '') {
-          echo('用法: /mcp [tools <server>]')
+          echo(tr('用法: /mcp [tools <server>]'))
           return
         }
         const servers = [...table.values()].sort((a, b) => a.serverName.localeCompare(b.serverName))
         echo(`MCP servers (${servers.length}):`)
         for (const s of servers) {
-          echo(`  ${s.serverName}: ${s.getToolCount()} 工具`)
+          echo(`  ${s.serverName}: ${s.getToolCount()}${tr(' 工具')}`)
         }
       },
     },
     {
       name: 'export',
       category: '会话',
-      description: '导出当前会话转录为 Markdown 文件（T3）',
+      description: tr('导出当前会话转录为 Markdown 文件（T3）'),
       argsHint: '[path]',
       run: async ({ text, echo }) => {
         // path 缺省由 TuiApp.exportTranscript 决定（会话 cwd 下 dsh-export-<id>.md）；
         // 空串按缺省处理。写文件失败向上抛，由分发层回显失败（fails loud）。
         const path = text.trim() === '' ? undefined : text.trim()
         const written = await deps.exportTranscript(path)
-        echo(`会话已导出: ${written}`)
+        echo(`${tr('会话已导出: ')}${written}`)
       },
     },
     {
       name: 'exit',
       category: '会话',
-      description: '退出 TUI（与 Ctrl+Q 相同）',
+      description: tr('退出 TUI（与 Ctrl+Q 相同）'),
       run: () => { deps.requestExit() },
     },
     {
       name: 'restart',
       category: '会话',
-      description: '重启当前 dsh 进程（同命令重新启动；插件更新后无需手动重跑）',
+      description: tr('重启当前 dsh 进程（同命令重新启动；插件更新后无需手动重跑）'),
       run: () => { deps.requestRestart() },
     },
     {
       name: 'yolo',
       category: '配置',
-      description: '全放行模式：审批不再逐项询问（on 开启 / off 关闭；等价 Shift+Tab 进 always-approve）',
+      description: tr('全放行模式：审批不再逐项询问（on 开启 / off 关闭；等价 Shift+Tab 进 always-approve）'),
       argsHint: 'on|off',
       run: ({ text, echo }) => {
         const arg = text.trim().toLowerCase()
         if (arg === 'off' || arg === '0' || arg === 'false') {
           deps.setYoloMode(false)
-          echo('全放行模式已关闭（恢复逐项审批）')
+          echo(tr('全放行模式已关闭（恢复逐项审批）'))
           return
         }
         // on / 缺省（无参）均视为开启——与 Shift+Tab 进 always-approve 同语义。
         if (arg !== '' && arg !== 'on' && arg !== '1' && arg !== 'true') {
-          echo('用法: /yolo [on|off]（缺省 on；off 关闭全放行）')
+          echo(tr('用法: /yolo [on|off]（缺省 on；off 关闭全放行）'))
           return
         }
         deps.setYoloMode(true)
-        echo('全放行模式已开启：后续审批请求自动放行（/yolo off 关闭，退出会话复位）')
+        echo(tr('全放行模式已开启：后续审批请求自动放行（/yolo off 关闭，退出会话复位）'))
       },
     },
     {
       name: 'help',
       category: '系统',
-      description: '列出全部命令与用法（/help <cmd> 查看单条详情）',
+      description: tr('列出全部命令与用法（/help <cmd> 查看单条详情）'),
       argsHint: '[cmd]',
       run: ({ text, echo }) => {
         // 注册表经 deps 注入（TuiApp 持有 this.slash 实例）——不访问 ctx 属性：
@@ -812,7 +813,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
         if (target !== '') {
           const command = all.find(c => c.name === target)
           if (command === undefined) {
-            echo(`未知命令: /${target}（/help 查看全部命令）`)
+            echo(`${tr('未知命令: /')}${target}${tr('（/help 查看全部命令）')}`)
             return
           }
           echo(`/${command.name}${command.argsHint === undefined ? '' : ` ${command.argsHint}`} — ${command.description}`)
@@ -821,13 +822,13 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
         // 无参：打开命令面板（分组浏览 + 过滤 + Enter 回填），替代 40+ 条
         // echo 刷屏；/help <cmd> 单条详情保留。
         deps.openCommandPalette()
-        echo('命令面板已打开：分组浏览 + 过滤（/help <cmd> 查看单条详情）')
+        echo(tr('命令面板已打开：分组浏览 + 过滤（/help <cmd> 查看单条详情）'))
       },
     },
     {
       name: 'cost',
       category: '系统',
-      description: '当前会话累计用量与成本估算（按模型分桶）',
+      description: tr('当前会话累计用量与成本估算（按模型分桶）'),
       argsHint: '',
       run: ({ echo }) => {
         for (const line of deps.sessionCostReport()) echo(line)
@@ -838,7 +839,7 @@ export function createBuiltinCommands(deps: BuiltinCommandDeps): SlashCommand[] 
 
 /** 渲染一行当前目标（/goal 无参视图）。 */
 function formatGoalView(view: GoalViewFacet): string {
-  return `目标: ${view.objective}（phase: ${view.phase}，rounds: ${view.roundsStarted}/${view.maxGoalRounds}）`
+  return `${tr('目标: ')}${view.objective}${tr('（phase: ')}${view.phase}${tr('，rounds: ')}${view.roundsStarted}/${view.maxGoalRounds}${tr('）')}`
 }
 
 export { getActiveThemeName }

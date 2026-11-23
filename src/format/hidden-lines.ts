@@ -9,6 +9,7 @@
 
 import { useAsciiGlyphs } from '../term-caps.js'
 
+import { tr } from '../i18n/index.js'
 /** 标记两侧的规则线长度（显示列）。 */
 const RULE = 3
 
@@ -23,6 +24,6 @@ export function hiddenLinesMarker(count: number, variant: 'hidden' | 'earlier' =
   const ascii = useAsciiGlyphs()
   const scissors = ascii ? '--' : '✂'
   const rule = (ascii ? '-' : '─').repeat(RULE)
-  const label = variant === 'earlier' ? `已隐藏上文 ${count} 行` : `已隐藏 ${count} 行`
+  const label = variant === 'earlier' ? `${tr('已隐藏上文 ')}${count}${tr(' 行')}` : `${tr('已隐藏 ')}${count}${tr(' 行')}`
   return `${rule} ${scissors} ${label} ${rule}`
 }

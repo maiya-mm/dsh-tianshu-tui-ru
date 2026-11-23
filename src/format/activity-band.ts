@@ -26,6 +26,7 @@ import {
 import { formatTokenCount } from './glance-bar.js'
 import { formatElapsedHuman } from './spinner-status.js'
 
+import { tr } from '../i18n/index.js'
 /** 活动类别（统一模型三来源）。 */
 export type ActivityKind = 'subagent' | 'workflow' | 'task'
 
@@ -108,19 +109,19 @@ const HEADER_GLYPH = '◐'
 
 /** 类别 → 计数头/文案名。 */
 const KIND_NAMES: Record<ActivityKind, string> = {
-  subagent: '子代理',
-  workflow: '工作流',
-  task: '后台任务',
+  subagent: tr('子代理'),
+  workflow: tr('工作流'),
+  task: tr('后台任务'),
 }
 
 /** 类别渲染顺序（计数头与折叠排序共用）。 */
 const KIND_ORDER: readonly ActivityKind[] = ['subagent', 'workflow', 'task']
 
 /** 未折叠时的常驻入口尾行（详情视图入口提示）。 */
-const ENTRY_PLAIN = '/workflow 管理 · /subagents 树'
+const ENTRY_PLAIN = tr('/workflow 管理 · /subagents 树')
 
 /** 折叠时的尾行：超封顶计数 + /workflow 入口。 */
-const ENTRY_FOLDED = (n: number): string => `└ …(+${n}) /workflow 管理`
+const ENTRY_FOLDED = (n: number): string => `└ …(+${n}${tr(') /workflow 管理')}`
 
 /** 无 lastTool 但有投影源且零工具调用时的子行文案。 */
 const INITIALIZING = 'Initializing…'
@@ -230,13 +231,13 @@ function projectItemRow(item: ActivityItem, opts: ActivityBandOptions): string {
   const suffixes: string[] = []
   if (item.kind === 'subagent') {
     const toolCalls = item.toolCalls
-    if (toolCalls !== undefined && toolCalls > 0) suffixes.push(`${toolCalls} 工具`)
+    if (toolCalls !== undefined && toolCalls > 0) suffixes.push(`${toolCalls}${tr(' 工具')}`)
     const tokensUsed = item.tokensUsed
     if (tokensUsed !== undefined && tokensUsed > 0) suffixes.push(`${formatTokenCount(tokensUsed)} tok`)
   } else if (item.kind === 'workflow') {
     if (item.phase !== undefined) suffixes.push(item.phase)
     const agents = item.agents
-    if (agents !== undefined && agents > 0) suffixes.push(`${agents} 个 agent`)
+    if (agents !== undefined && agents > 0) suffixes.push(`${agents}${tr(' 个 agent')}`)
   }
   const startedAt = item.startedAt
   const now = opts.now

@@ -28,6 +28,7 @@ import { formatReasoningBlock } from '../format/reasoning.js'
 import { parseToolArguments } from '../format/tool-meta.js'
 import { color } from '../engine/ansi.js'
 
+import { tr } from '../i18n/index.js'
 export { parseToolArguments }
 
 /** 一行渲染结果：ANSI 文本 + 该行占用的显示行数（wrap 感知由调用方度量）。 */
@@ -98,12 +99,12 @@ function renderInjectedChip(message: TranscriptMessage, theme: RivetTheme): Rend
   const kind = source.kind
   if (kind === 'skill-invocation') {
     const name = source.name
-    const label = typeof name === 'string' && name !== '' ? `🧭 使用技能: ${name}` : '🧭 使用技能'
+    const label = typeof name === 'string' && name !== '' ? `${tr('🧭 使用技能: ')}${name}` : tr('🧭 使用技能')
     return { ansi: color(label, theme.muted), kind: 'system' }
   }
   if (kind === 'skill-catalog') {
     const count = Array.isArray(source.entries) ? source.entries.length : null
-    const label = count === null ? '🧭 技能目录已更新' : `🧭 技能目录已更新（${count} 项）`
+    const label = count === null ? tr('🧭 技能目录已更新') : `${tr('🧭 技能目录已更新（')}${count}${tr(' 项）')}`
     return { ansi: color(label, theme.muted), kind: 'system' }
   }
   return null

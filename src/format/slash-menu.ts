@@ -11,6 +11,7 @@
 import { color } from '../engine/ansi.js'
 import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
+import { tr } from '../i18n/index.js'
 
 /** 菜单最大可见行数（超出滚动窗口）。 */
 export const SLASH_MENU_MAX_ROWS = 8
@@ -95,7 +96,7 @@ export function formatSlashMenu(input: FormatSlashMenuInput, theme: RivetTheme):
     const pad = Math.max(0, labelW - displayWidth(labelTrimmed))
     // 行宽 = prefix(2) + labelW + pad + 2 间隙 + descW = width（desc 显示时）。
     const descW = width - displayWidth(prefix) - labelW - 2
-    const desc = descW >= 2 ? truncateTo(item.description, descW) : ''
+    const desc = descW >= 2 ? truncateTo(tr(item.description), descW) : ''
     const labelAnsi = color(`${prefix}${labelTrimmed}`, isSel ? theme.primary : theme.muted, isSel ? { bold: true } : undefined)
     const descAnsi = desc === '' ? '' : color(`  ${desc}`, theme.muted)
     out.push(`${labelAnsi}${' '.repeat(pad)}${descAnsi}`)

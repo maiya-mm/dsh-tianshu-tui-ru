@@ -32,3 +32,8 @@ docs-internal/
 task_plan.md
 progress.md
 findings.md
+
+# nix devshell: direnv-профиль и symlink-результаты сборки
+.direnv/
+result
+result-*

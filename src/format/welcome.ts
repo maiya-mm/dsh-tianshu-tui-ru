@@ -9,6 +9,7 @@
 import chalk from 'chalk'
 import { color } from '../engine/ansi.js'
 import type { RivetTheme } from '../theme.js'
+import { tr } from '../i18n/index.js'
 import { ambiguousWidthMode, displayWidth, truncateToDisplayWidth, wrapToDisplayWidth } from '../width.js'
 import { WHALE_COLS } from './whale.js'
 import { STAR_WHALE_COLS } from './whale-star.js'
@@ -120,7 +121,7 @@ export function formatEnvCheckLine(env: WelcomeEnvCheck, theme: RivetTheme): str
   const segments: EnvSegment[] = [
     { text: env.themeName },
     { text: env.hasApiKey ? 'API Key ✓' : 'API Key ✗', ...(!env.hasApiKey ? { warning: true } : {}) },
-    ...(!env.hasApiKey ? [{ text: '设 DEEPSEEK_API_KEY 或运行 /key', warning: true }] : []),
+    ...(!env.hasApiKey ? [{ text: tr('设 DEEPSEEK_API_KEY 或运行 /key'), warning: true }] : []),
     { text: `Git ${env.isGitRepo ? '✓' : '✗'}` },
   ]
   const separator = ' · '
@@ -197,7 +198,8 @@ export const WELCOME_TIPS_MAX_ITEMS = 4
  */
 export function formatWelcomeTips(input: FormatWelcomeTipsInput, theme: RivetTheme): string[] {
   const { width } = input
-  const items = input.items.slice(0, WELCOME_TIPS_MAX_ITEMS)
+  // i18n：译文在 hintCol/truncateTo 量宽之前落定（俄文更宽，必须先翻再算）。
+  const items = input.items.slice(0, WELCOME_TIPS_MAX_ITEMS).map(item => ({ ...item, label: tr(item.label) }))
   if (width <= 0) return []
   const budget = Math.max(0, width - 1)
   let hintCol = 0

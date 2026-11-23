@@ -17,6 +17,7 @@ import { color } from '../engine/ansi.js'
 import { CHROME_INACTIVE_SHIMMER, CHROME_SUBTLE } from './chrome-colors.js'
 import type { RivetTheme } from '../theme.js'
 import { displayWidth } from '../width.js'
+import { tr } from '../i18n/index.js'
 import type { FooterInfoLevel } from '../prefs.js'
 import type { FormatGlanceBarInput } from './glance-bar.js'
 import { formatGlanceMetricsLine } from './glance-bar.js'
@@ -213,10 +214,10 @@ export function formatPromptFooter(input: FormatPromptFooterInput, theme: RivetT
     ? theme.warning
     : alwaysApprove === true ? theme.error : CHROME_INACTIVE_SHIMMER
   const tiers = input.approvalPending === true
-    ? approvalHintTiers(input.approvalHints ?? DEFAULT_APPROVAL_HINTS)
+    ? approvalHintTiers((input.approvalHints ?? DEFAULT_APPROVAL_HINTS).map(tr))
     : suffixTiers(input.inspectOpen === true
-        ? (input.inspectHints ?? DEFAULT_INSPECT_HINTS)
-        : [footerTipForIndex(input.tipIndex ?? footerTipIndex())])
+        ? (input.inspectHints ?? DEFAULT_INSPECT_HINTS).map(tr)
+        : [tr(footerTipForIndex(input.tipIndex ?? footerTipIndex()))])
   // 取第一个放得下的梯队；全部放不下时退化为 mode 单段（mode 恒保留）。
   for (const segs of tiers) {
     const text = [mode, ...segs].join(' · ')

@@ -21,6 +21,9 @@ export type FooterInfoLevel = (typeof FOOTER_INFO_LEVELS)[number];
 /** 欢迎页风格档位：blue 新版蓝鲸抱星（默认）/ star 紫鲸举星 / retro 复古小鲸鱼。 */
 export declare const WELCOME_STYLES: readonly ['blue', 'star', 'retro'];
 export type WelcomeStyle = (typeof WELCOME_STYLES)[number];
+/** 界面语言（zh 源语言/恒等；ru 俄文；en 预留无字典）。缺省 zh。 */
+export declare const TUI_LANGUAGES: readonly ['zh', 'ru', 'en'];
+export type TuiLanguage = (typeof TUI_LANGUAGES)[number];
 /** 偏好文件形状（全部可选；未知 key 读取时丢弃，前向兼容）。 */
 export interface TuiPrefs {
     /** 主题名（内置名 | custom:<name> | 'auto'）。 */
@@ -51,6 +54,8 @@ export interface TuiPrefs {
     scrollbackMaxLines?: number;
     /** 欢迎页风格（缺省 blue 蓝鲸新版；star 紫鲸 / retro 复古小鲸鱼；/welcome 切换，下次启动生效）。 */
     welcomeStyle?: WelcomeStyle;
+    /** 界面语言（缺省 zh；优先级高于 env DSH_TUI_LANG，见 i18n/index.ts）。 */
+    lang?: TuiLanguage;
 }
 /** 缺省偏好（= 现行为）。 */
 export declare const DEFAULT_PREFS: Readonly<TuiPrefs>;

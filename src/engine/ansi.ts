@@ -9,6 +9,10 @@
  */
 
 import chalk from 'chalk'
+// i18n 缝：color() 是面板文本的统一出口，调用方在 padding/truncate **之前**
+// 构造行——这里 tr（精确匹配）把源串换成译文，宽度随后按译文的显示宽度算。
+// 精确匹配保证用户/模型文本（Markdown、消息）不会被误译。
+import { tr } from '../i18n/index.js'
 
 // ── 原始转义序列常量 ──────────────────────────────────────────
 
@@ -315,7 +319,7 @@ export function color(
   if (opts?.dim) prefix += ANSI.DIM
   if (opts?.italic) prefix += ANSI.ITALIC
   if (opts?.underline) prefix += ANSI.UNDERLINE
-  return `${prefix}${text}${ANSI.RESET}`
+  return `${prefix}${tr(text)}${ANSI.RESET}`
 }
 
 // ── OSC 52 剪贴板 ─────────────────────────────────────────────

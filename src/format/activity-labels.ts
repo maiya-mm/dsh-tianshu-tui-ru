@@ -7,6 +7,7 @@
  * 返回 LiveRegionLine[]，单行。
  */
 import { color } from '../engine/ansi.js'
+import { tr } from '../i18n/index.js'
 import type { LiveRegionLine } from '../engine/live-engine.js'
 import type { RivetTheme } from '../theme.js'
 
@@ -42,20 +43,21 @@ function pick(verbs: readonly string[], seq: number): string {
  */
 export function activityPhrase(input: Omit<ActivityLabelInput, 'ascii'>): string {
   const { kind, detail, seq } = input
+  // tr 在短语组装处（宽度测量之前）：词池与 `调用 X` 都是源串。
   switch (kind) {
     case 'tool_use': {
-      if (detail === undefined) return '调用工具'
+      if (detail === undefined) return tr('调用工具')
       const clipped = detail.length > DETAIL_LIMIT ? detail.slice(0, DETAIL_LIMIT) : detail
-      return `调用 ${clipped}`
+      return `${tr('调用')} ${clipped}`
     }
     case 'thinking':
-      return pick(THINKING_VERBS, seq)
+      return tr(pick(THINKING_VERBS, seq))
     case 'tool_result':
-      return pick(TOOL_RESULT_VERBS, seq)
+      return tr(pick(TOOL_RESULT_VERBS, seq))
     case 'text':
-      return pick(TEXT_VERBS, seq)
+      return tr(pick(TEXT_VERBS, seq))
     case 'lifecycle':
-      return detail ?? '补偿轮'
+      return detail === undefined ? tr('补偿轮') : detail
   }
 }
 

@@ -1,5 +1,6 @@
 import type { OverlayKeyResult, OverlayRenderer } from '../engine/overlay-engine.js'
 import { color } from '../engine/ansi.js'
+import { tr } from '../i18n/index.js'
 import type { RivetTheme } from '../theme.js'
 import { truncateToDisplayWidth } from '../width.js'
 import { maskKeyInput } from './key-dialog.js'
@@ -415,7 +416,8 @@ export class ProviderEditorController implements OverlayRenderer {
 
   private field(label: string, value: string, focus: Focus, placeholder = ''): string {
     const shown = value.length > 0 ? value : placeholder
-    return `${this.focus === focus && (this.phase === 'editing' || this.phase === 'key-retry') ? '▶' : ' '} ${label}: ${shown}`
+    // 字段行不过 color()（纯文本 + 聚焦箭头），tr 必须在这里、truncate 之前。
+    return `${this.focus === focus && (this.phase === 'editing' || this.phase === 'key-retry') ? '▶' : ' '} ${tr(label)}: ${tr(shown)}`
   }
 
   private renderCandidates(width: number, height: number): string[] {
@@ -457,7 +459,7 @@ export class ProviderEditorController implements OverlayRenderer {
     if (session.mode === 'create' || draft.declared) {
       lines.push(this.field('Protocol', providerString(draft.profile, 'api') ?? PI_AI_PROTOCOLS[0], 'api', ''))
     }
-    lines.push(this.field('Models', `${draft.models.length} 项${draft.modelsOverridden ? '（自定义）' : '（继承）'}`, 'models'))
+    lines.push(this.field('Models', `${draft.models.length} ${tr(draft.modelsOverridden ? '项（自定义）' : '项（继承）')}`, 'models'))
     const modelLimit = Math.max(1, Math.min(5, height - lines.length - 7))
     const modelStart = Math.max(0, Math.min(this.modelIndex - modelLimit + 1, draft.models.length - modelLimit))
     for (const [offset, model] of draft.models.slice(modelStart, modelStart + modelLimit).entries()) {

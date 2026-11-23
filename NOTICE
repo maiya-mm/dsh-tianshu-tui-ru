@@ -1,3 +1,29 @@
+This repository is a fork of @deepseek-ai/dsh-tianshu-tui
+(https://github.com/huiliyi37/dsh-tianshu-tui), maintained as
+maiya-mm/dsh-tianshu-tui-ru.
+
+As a whole work it is distributed under the GNU General Public License,
+version 3 or later (see LICENSE). Files inherited from upstream stay
+available under the Apache License, Version 2.0 (see LICENSE-APACHE);
+the upstream copyright and attribution notices below are retained as
+required by Apache License 2.0, section 4.
+
+Changes made by this fork relative to upstream 1.0.0-rc.10 (Apache License
+2.0, section 4(b) notice of modification):
+  - added src/i18n/{index.ts,ru.ts} and tests/i18n.spec.ts;
+  - added the `lang` preference in src/prefs.ts;
+  - added translation calls in src/format/{welcome,prompt-footer,slash-menu}.ts;
+  - added flake.nix, flake.lock, .envrc, .gitignore entries (development
+    environment only, not part of the runtime bundle).
+
+Files that this fork adds are licensed GPL-3.0-or-later. The statement in
+SOURCE-MAP.md that `new` files are distributed under Apache-2.0 describes
+upstream packaging; for this fork the paragraph above applies. The nested
+package `lsp/` (published upstream as @huiliyi37/dsh-lsp) is unchanged and
+remains Apache-2.0.
+
+---
+
 @deepseek-ai/dsh-tianshu-tui
 Copyright (c) 2025-2026 DeepSeek Harness contributors
 
@@ -9,14 +35,10 @@ an Apache-2.0 licensed terminal coding agent runtime:
   Licensed under the Apache License, Version 2.0 (the "License").
 
 The full text of the Apache License, Version 2.0 is included in the
-accompanying LICENSE file. The complete per-file source mapping (source path
+accompanying LICENSE-APACHE file. The complete per-file source mapping (source path
 in the Tianshu repository -> target path in this package -> modified or not)
 is recorded in SOURCE-MAP.md.
 
 Modified files (per Apache License 2.0, section 4(b)) are enumerated in
 SOURCE-MAP.md with status `modified`; that table is the prominent, complete
 record of which files were changed from the upstream work.
-
-Files listed as `new` in SOURCE-MAP.md are original works of the DeepSeek
-Harness contributors, distributed under the same Apache License, Version 2.0
-as this package.

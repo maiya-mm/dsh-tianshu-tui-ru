@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@huiliyi37/dsh-tianshu-tui.svg)](https://www.npmjs.com/package/@huiliyi37/dsh-tianshu-tui)
 [![GitHub release](https://img.shields.io/github/v/release/huiliyi37/dsh-tianshu-tui?include_prereleases)](https://github.com/huiliyi37/dsh-tianshu-tui/releases)
 [![Node](https://img.shields.io/node/v/@huiliyi37/dsh-tianshu-tui.svg)](https://www.npmjs.com/package/@huiliyi37/dsh-tianshu-tui)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![dshfind](https://dshfind.com/api/badge/huiliyi37/dsh-tianshu-tui?lang=zh)](https://dshfind.com/zh/plugins/huiliyi37/dsh-tianshu-tui?ref=badge)
 [![官网](https://img.shields.io/badge/website-tianshuharness.com-0f766e)](https://tianshuharness.com/)
 [![上游项目](https://img.shields.io/badge/upstream-Tianshu--harness-181717?logo=github)](https://github.com/huiliyi37/Tianshu-harness)
@@ -190,3 +190,11 @@ npm run build
 ## 许可与来源
 
 基于 [Apache-2.0](LICENSE) 开源。终端渲染核心源自作者的 [Tianshu-harness](https://github.com/huiliyi37/Tianshu-harness) 项目并持续演进，文件级来源与修改说明见 [SOURCE-MAP.md](SOURCE-MAP.md) 和 [NOTICE](NOTICE)。
+
+### This fork
+
+This repository is a fork of the upstream project, distributed as a whole
+under [GPL-3.0-or-later](LICENSE); inherited files stay available under
+[Apache-2.0](LICENSE-APACHE). It adds a Russian translation layer
+(`src/i18n/`) and a Nix development environment (`flake.nix`). See
+[NOTICE](NOTICE) for the list of modifications.

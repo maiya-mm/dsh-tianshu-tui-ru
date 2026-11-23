@@ -23,7 +23,7 @@
     "NOTICE",
     "SOURCE-MAP.md"
   ],
-  "license": "Apache-2.0",
+  "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/huiliyi37/dsh-tianshu-tui.git"

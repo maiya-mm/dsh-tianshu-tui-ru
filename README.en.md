@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@huiliyi37/dsh-tianshu-tui.svg)](https://www.npmjs.com/package/@huiliyi37/dsh-tianshu-tui)
 [![GitHub release](https://img.shields.io/github/v/release/huiliyi37/dsh-tianshu-tui?include_prereleases)](https://github.com/huiliyi37/dsh-tianshu-tui/releases)
 [![Node](https://img.shields.io/node/v/@huiliyi37/dsh-tianshu-tui.svg)](https://www.npmjs.com/package/@huiliyi37/dsh-tianshu-tui)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Website](https://img.shields.io/badge/website-tianshuharness.com-0f766e)](https://tianshuharness.com/)
 [![Upstream](https://img.shields.io/badge/upstream-Tianshu--harness-181717?logo=github)](https://github.com/huiliyi37/Tianshu-harness)
 [![Forum](https://img.shields.io/badge/forum-tianshu.club-2563eb)](https://tianshu.club/)
@@ -189,3 +189,11 @@ npm run build
 ## License and provenance
 
 Open source under [Apache-2.0](LICENSE). The terminal renderer evolved from the author's [Tianshu-harness](https://github.com/huiliyi37/Tianshu-harness). See [SOURCE-MAP.md](SOURCE-MAP.md) and [NOTICE](NOTICE) for file-level provenance and modification notices.
+
+### This fork
+
+This repository is a fork of the upstream project, distributed as a whole
+under [GPL-3.0-or-later](LICENSE); inherited files stay available under
+[Apache-2.0](LICENSE-APACHE). It adds a Russian translation layer
+(`src/i18n/`) and a Nix development environment (`flake.nix`). See
+[NOTICE](NOTICE) for the list of modifications.
